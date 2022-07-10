@@ -95,13 +95,77 @@ def display_grid(surface):
 def show_pieces():
     from chess_setup import p1, p2
     from chess_main import WIN
-    for piece in p1.pieces:
-        if type(piece) != list:
-            WIN.blit(piece.image, (0, 0))
+
+    for piece in p1.pieces + p2.pieces:
+        y = piece.loc[0]
+        x = piece.loc[1]
+        WIN.blit(piece.image, (80*x, 80*y))
+    
 
 
+def select_piece(mouse):
+    from chess_setup import p1, p2
+    
+    for piece in p1.pieces + p2.pieces:     
+        if piece.loc[1]*80 < mouse[0] < (piece.loc[1]+1)*80 and piece.loc[0]*80 < mouse[1] < (piece.loc[0]+1)*80:
+            return piece
+        
+
+    
+            
+def find_squares(piece):
+    from chess_setup import p1, p2
+    
+    nbrs = find_nbrs(piece)     # returns [u, d, l, r, ul, ur, dl, dr] 
+    print(nbrs)
 
 
+def find_nbrs(piece):
+    from chess_setup import p1, p2
 
+    nbrs = []
+    py = piece.loc[0] 
+    px = piece.loc[1]
+    for test_piece in p1.pieces + p2.pieces:
+            y = test_piece.loc[0]
+            x = test_piece.loc[1]
+            
+            if x == px and y == py + 1:     # up
+                nbrs.append('u')
+            else:
+                nbrs.append('-')
 
+            if x == px and y == py - 1:      # down
+                nbrs.append('d')
+            else:
+                nbrs.append('-')
 
+            if x == px - 1 and y == py:     # left    
+                nbrs.append('l')
+            else:
+                nbrs.append('-')
+
+            if x == px + 1 and y == py:     # right    
+                nbrs.append('r')
+            else:
+                nbrs.append('-')
+
+            if x == px - 1 and y == py + 1:     # upleft
+                nbrs.append('ul')
+            else:
+                nbrs.append('-')
+
+            if x == px + 1 and y == py + 1:      # upright
+                nbrs.append('ur')
+            else:
+                nbrs.append('-')
+
+            if x == px - 1 and y == py - 1:     # downleft    
+                nbrs.append('dl')
+            else:
+                nbrs.append('-')
+
+            if x == px - 1 and y == py - 1:     # downright    
+                nbrs.append('dr')
+            else:
+                nbrs.append('-')

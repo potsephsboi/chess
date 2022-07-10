@@ -30,6 +30,15 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                
+                piece = select_piece(pygame.mouse.get_pos())
+                if piece is not None:
+                    print(piece.name)
+                    # find_squares(piece)
+                    
+
             
         draw_window()
     pygame.quit()
