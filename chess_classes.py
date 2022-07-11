@@ -19,10 +19,10 @@ class Piece:
 class Pawn(Piece):
     def __init__(self, name, value, loc, image):
         super().__init__(name, value, loc, image)
+        self.has_moved = False
         self.motion = '1u'  # one up
         self.take = '1ud'   # one up diagonally
 
-        
 
 class Knight(Piece):
     def __init__(self, name, value, loc, image):

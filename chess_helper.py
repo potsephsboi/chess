@@ -1,5 +1,5 @@
 import pygame
-
+from chess_classes import *
 
 col_dict = {
     'a': 0,
@@ -17,64 +17,6 @@ col_dict = {
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREY = (115, 147, 179)
-
-class Player:
-    def __init__(self, identity, pieces):
-        self.identity = identity
-        self.pieces = pieces
-
-    def __repr__(self) -> str:
-        return f'Player {self.identity} - {len(self.pieces)} pieces remaining {[p for p in self.pieces]}'
-
-
-class Piece:
-    def __init__(self, name, value, loc, image):
-        self.name = name 
-        self.value = value 
-        self.loc = loc
-        self.image = image
-    def __repr__(self):
-        return f'Piece name: {self.name}'
-
-class Pawn(Piece):
-    def __init__(self, name, value, loc, image):
-        super().__init__(name, value, loc, image)
-        self.motion = '1u'  # one up
-        self.take = '1ud'   # one up diagonally
-
-        
-
-class Knight(Piece):
-    def __init__(self, name, value, loc, image):
-        super().__init__(name, value, loc, image)
-
-class Bishop(Piece):
-    def __init__(self, name, value, loc, image):
-        super().__init__(name, value, loc, image)
-        self.motion = '-d'  # unrestricted diagonally 
-        self.take = '-d'    # unrestricted diagonall
-
-
-class Rook(Piece):
-    def __init__(self, name, value, loc, image):
-        super().__init__(name, value, loc, image)
-        self.motion = '-c'  # unrestricted cross
-        self.take = '-c'    # unrestricted cross
-
-
-class Queen(Piece):
-    def __init__(self, name, value, loc, image):
-        super().__init__(name, value, loc, image)
-        self.motion = '-a'  # unrestricted all
-        self.take = '-a'    # unrestricted all
-
-
-class King(Piece):
-    def __init__(self, name, value, loc, image):
-        super().__init__(name, value, loc, image)
-        self.motion = '1a'  # one all
-        self.take = '1a'    # one all
-
 
 
 def display_grid(surface):
@@ -110,62 +52,118 @@ def select_piece(mouse):
         if piece.loc[1]*80 < mouse[0] < (piece.loc[1]+1)*80 and piece.loc[0]*80 < mouse[1] < (piece.loc[0]+1)*80:
             return piece
         
+            
+def available_moves(piece):
+    
+    sqrs = find_squares(piece)     # returns [n(u), n(d), n(l), n(r), n(ul), n(ur), n(dl), n(dr)]
+    print(sqrs)                    # where n(x)  == num of available squares in x direction
+    
+    return find_moves(piece, sqrs)
+
 
     
+        
+
+def find_moves(piece, sqrs):
+    from chess_setup import occupied
+
+    y = piece.loc[0]
+    x = piece.loc[1]
+    moves = [0 for _ in range(8)]
+    if is_black(piece):
+        if piece.name[1] == 'P':    # pawn
+            if occupied[y+1][x+1] == 'W' and (x < 7 and y < 7):    # downright
+                moves[7] += 1
+            if occupied[y+1][x-1] == 'W' and (x > 0 and y < 7):    # downleft
+                moves[6] += 1  
             
+            if piece.has_moved:
+                moves[1] += 1
+            else:
+                moves[1] += 2
+    
+    else:
+        if piece.name[1] == 'P':    # pawn
+            if occupied[y-1][x+1] == 'B' and (x < 7 and y > 0):    # upright
+                moves[5] += 1
+            if occupied[y-1][x-1] == 'B' and (x > 0 and y > 0):    # upleft
+                moves[4] += 1  
+            
+            if piece.has_moved:
+                moves[0] += 1
+            else:
+                moves[0] += 2
+
+
 def find_squares(piece):
-    from chess_setup import p1, p2
+    from chess_setup import occupied
     
-    nbrs = find_nbrs(piece)     # returns [u, d, l, r, ul, ur, dl, dr] 
-    print(nbrs)
+    pos = [piece.loc[1], piece.loc[0]]
 
+    # pos[0] == x, pos[1] == y
+    def up(pos, n):
+        if pos[1]-1 < 0 or occupied[pos[1]-1][pos[0]] != piece.name[0]:
+            return n
 
-def find_nbrs(piece):
-    from chess_setup import p1, p2
-
-    nbrs = []
-    py = piece.loc[0] 
-    px = piece.loc[1]
-    for test_piece in p1.pieces + p2.pieces:
-            y = test_piece.loc[0]
-            x = test_piece.loc[1]
+        n += 1
+        return up([pos[0], pos[1]-1], n)
+        
             
-            if x == px and y == py + 1:     # up
-                nbrs.append('u')
-            else:
-                nbrs.append('-')
+    def down(pos, n):
+        if pos[1]+1 > 7 or occupied[pos[1]+1][pos[0]] != piece.name[0]:
+            return n
+        
+        n += 1
+        return down([pos[0], pos[1]+1], n)
 
-            if x == px and y == py - 1:      # down
-                nbrs.append('d')
-            else:
-                nbrs.append('-')
+    def left(pos, n):
+        if pos[0]-1 < 0 or occupied[pos[1]][pos[0]-1] != piece.name[0]:
+            return n
+        
+        n += 1
+        return left([pos[0]-1, pos[1]], n)
 
-            if x == px - 1 and y == py:     # left    
-                nbrs.append('l')
-            else:
-                nbrs.append('-')
+    def right(pos, n):
+        if pos[0]+1 > 7 or occupied[pos[1]][pos[0]+1] != piece.name[0]:
+            return n
+        
+        n += 1
+        return right([pos[0]+1, pos[1]], n)
 
-            if x == px + 1 and y == py:     # right    
-                nbrs.append('r')
-            else:
-                nbrs.append('-')
+    def upleft(pos, n):
+        if (pos[1]-1 < 0 or pos[0]-1 < 0) or occupied[pos[1]-1][pos[0]-1] != piece.name[0]:
+            return n
+        
+        n += 1
+        return upleft([pos[0]-1, pos[1]-1], n)
+    
+    def upright(pos, n):
+        if (pos[1]-1 < 0 or pos[0]+1 > 7) or occupied[pos[1]-1][pos[0]+1] != piece.name[0]:
+            print(n)
+            return n
+        
+        n += 1
+        return upright([pos[0]+1, pos[1]-1], n)
 
-            if x == px - 1 and y == py + 1:     # upleft
-                nbrs.append('ul')
-            else:
-                nbrs.append('-')
+    def downleft(pos, n):
+        if (pos[0]-1 < 0 or pos[1]+1 > 7) or occupied[pos[1]+1][pos[0]-1] != piece.name[0]:
+            return n
+        
+        n += 1
+        return downleft([pos[0]-1, pos[1]+1], n)
 
-            if x == px + 1 and y == py + 1:      # upright
-                nbrs.append('ur')
-            else:
-                nbrs.append('-')
+    def downright(pos, n):
+        if (pos[0]+1 > 7 or pos[1]+1 > 7) or occupied[pos[1]+1][pos[0]+1] != piece.name[0]:
+            return n
+        
+        n += 1
+        return downright([pos[0]+1, pos[1]+1], n)
 
-            if x == px - 1 and y == py - 1:     # downleft    
-                nbrs.append('dl')
-            else:
-                nbrs.append('-')
 
-            if x == px - 1 and y == py - 1:     # downright    
-                nbrs.append('dr')
-            else:
-                nbrs.append('-')
+    return [up(pos, 0), down(pos, 0), left(pos, 0), right(pos, 0), 
+            upleft(pos, 0), upright(pos, 0), downleft(pos, 0), downright(pos, 0)]
+
+
+
+def is_black(piece):
+    return piece.name[0] == 'B'
