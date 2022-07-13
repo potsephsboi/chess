@@ -1,4 +1,3 @@
-from cmath import pi
 from chess_helper import *
 
 WIDTH = 640
@@ -38,7 +37,7 @@ p2pawns = [Pawn('BP', 1, [1, i], pygame.image.load('pieces/black/bpawn.png')) fo
 
 p2.pieces += p2pawns
 
-occupied = [['B' for i in range(8)] for j in range(2)] + [['_' for i in range(8)] for j in range(4)] + [['W' for i in range(8)] for j in range(2)]
+occupied = [[-1 for i in range(8)] for j in range(2)] + [[0 for i in range(8)] for j in range(4)] + [[1 for i in range(8)] for j in range(2)]
         
 
 
@@ -46,12 +45,12 @@ occupied = [['B' for i in range(8)] for j in range(2)] + [['_' for i in range(8)
 def update_occupied(occ):
     for piece in p1.pieces + p2.pieces:
         if is_black(piece):
-            occ[piece.loc[0]][piece.loc[1]] = 'B'
+            occ[piece.loc[0]][piece.loc[1]] = -1
         else:
-            occ[piece.loc[0]][piece.loc[1]] = 'W'
+            occ[piece.loc[0]][piece.loc[1]] = 1
 
 
 update_occupied(occupied)
-for row in occupied:
-    print(row)
+# for row in occupied:
+#     print(row)
 

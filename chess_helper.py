@@ -13,6 +13,12 @@ col_dict = {
 
 }
 
+name_id = {
+    'W': 1, 
+    'B': -1, 
+    '_': 0
+
+}
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -54,7 +60,7 @@ def select_piece(mouse):
         
             
 def available_moves(piece):
-    
+    print(piece.name)
     sqrs = find_squares(piece)     # returns [n(u), n(d), n(l), n(r), n(ul), n(ur), n(dl), n(dr)]
     print(sqrs)                    # where n(x)  == num of available squares in x direction
     
@@ -94,6 +100,7 @@ def find_moves(piece, sqrs):
             else:
                 moves[0] += 2
 
+    # add functionality for rooks
 
 def find_squares(piece):
     from chess_setup import occupied
@@ -102,60 +109,75 @@ def find_squares(piece):
 
     # pos[0] == x, pos[1] == y
     def up(pos, n):
-        if pos[1]-1 < 0 or occupied[pos[1]-1][pos[0]] != piece.name[0]:
+        if pos[1]-1 < 0 or occupied[pos[1]-1][pos[0]] == name_id[piece.name[0]]:
             return n
+        if occupied[pos[1]-1][pos[0]]*(-1) == name_id[piece.name[0]]:
+            return n+1
 
         n += 1
         return up([pos[0], pos[1]-1], n)
         
             
     def down(pos, n):
-        if pos[1]+1 > 7 or occupied[pos[1]+1][pos[0]] != piece.name[0]:
+        if pos[1]+1 > 7 or occupied[pos[1]+1][pos[0]] == name_id[piece.name[0]]:
             return n
-        
+        if occupied[pos[1]+1][pos[0]]*(-1) == name_id[piece.name[0]]:
+            return n+1
+
         n += 1
         return down([pos[0], pos[1]+1], n)
 
     def left(pos, n):
-        if pos[0]-1 < 0 or occupied[pos[1]][pos[0]-1] != piece.name[0]:
+        if pos[0]-1 < 0 or occupied[pos[1]][pos[0]-1] == name_id[piece.name[0]]:
             return n
-        
+        if occupied[pos[1]][pos[0]-1]*(-1) == name_id[piece.name[0]]:
+            return n+1
+
         n += 1
         return left([pos[0]-1, pos[1]], n)
 
     def right(pos, n):
-        if pos[0]+1 > 7 or occupied[pos[1]][pos[0]+1] != piece.name[0]:
+        if pos[0]+1 > 7 or occupied[pos[1]][pos[0]+1] == name_id[piece.name[0]]:
             return n
-        
+        if occupied[pos[1]][pos[0]+1]*(-1) == name_id[piece.name[0]]:
+            return n+1
+
         n += 1
         return right([pos[0]+1, pos[1]], n)
 
     def upleft(pos, n):
-        if (pos[1]-1 < 0 or pos[0]-1 < 0) or occupied[pos[1]-1][pos[0]-1] != piece.name[0]:
+        if (pos[1]-1 < 0 or pos[0]-1 < 0) or occupied[pos[1]-1][pos[0]-1] == name_id[piece.name[0]]:
             return n
-        
+        if occupied[pos[1]-1][pos[0]-1]*(-1) == name_id[piece.name[0]]:
+            return n+1
+
         n += 1
         return upleft([pos[0]-1, pos[1]-1], n)
     
     def upright(pos, n):
-        if (pos[1]-1 < 0 or pos[0]+1 > 7) or occupied[pos[1]-1][pos[0]+1] != piece.name[0]:
-            print(n)
+        if (pos[1]-1 < 0 or pos[0]+1 > 7) or occupied[pos[1]-1][pos[0]+1] == name_id[piece.name[0]]:
             return n
-        
+        if occupied[pos[1]-1][pos[0]+1]*(-1) == name_id[piece.name[0]]:
+            return n+1
+
         n += 1
         return upright([pos[0]+1, pos[1]-1], n)
 
     def downleft(pos, n):
-        if (pos[0]-1 < 0 or pos[1]+1 > 7) or occupied[pos[1]+1][pos[0]-1] != piece.name[0]:
+        if (pos[0]-1 < 0 or pos[1]+1 > 7) or occupied[pos[1]+1][pos[0]-1] == name_id[piece.name[0]]:
             return n
-        
+        if occupied[pos[1]+1][pos[0]-1]*(-1) == name_id[piece.name[0]]:
+            return n+1
+
         n += 1
         return downleft([pos[0]-1, pos[1]+1], n)
 
     def downright(pos, n):
-        if (pos[0]+1 > 7 or pos[1]+1 > 7) or occupied[pos[1]+1][pos[0]+1] != piece.name[0]:
+        if (pos[0]+1 > 7 or pos[1]+1 > 7) or occupied[pos[1]+1][pos[0]+1] == name_id[piece.name[0]]:
             return n
-        
+        if occupied[pos[1]+1][pos[0]+1]*(-1) == name_id[piece.name[0]]:
+            return n+1
+            
         n += 1
         return downright([pos[0]+1, pos[1]+1], n)
 
