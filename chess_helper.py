@@ -57,52 +57,92 @@ def select_piece(mouse):
     for piece in p1.pieces + p2.pieces:     
         if piece.loc[1]*80 < mouse[0] < (piece.loc[1]+1)*80 and piece.loc[0]*80 < mouse[1] < (piece.loc[0]+1)*80:
             return piece
-        
-            
-def available_moves(piece):
-    print(piece.name)
-    sqrs = find_squares(piece)     # returns [n(u), n(d), n(l), n(r), n(ul), n(ur), n(dl), n(dr)]
-    print(sqrs)                    # where n(x)  == num of available squares in x direction
+
+
+def find_moves(piece, brq):     # bishop rook queen
     
-    return find_moves(piece, sqrs)
+    if piece.name[1] == 'P':
+        if is_black(piece):
+            if piece.has_moved:
+                return [0, 1, 0, 0, 0, 0, 0, 0]
+            else:
+                return [0, 2, 0, 0, 0, 0, 0, 0]
+        else:
+            if piece.has_moved:
+                return [1, 0, 0, 0, 0, 0, 0, 0]
+            else:
+                return [2, 0, 0, 0, 0, 0, 0, 0]
 
-
+    elif piece.name[1] == 'R' or piece.name[1] == 'B' or piece.name[1] == 'Q':
+        return brq
     
-        
+    elif piece.name[1] == 'K':
+        return [1 if brq[i] != 0 else brq[i] for i in range(8)]
 
-def find_moves(piece, sqrs):
+    elif piece.name[1] == 'N':
+        return knight_squares(piece) # -> int list: [2u_1l, 2u_1r, 1u_2l, 1u_2r, 2d_1l, 2d_1r, 1d_2l, 1d_2r]  
+
+
+
+def knight_squares(piece):
     from chess_setup import occupied
 
-    y = piece.loc[0]
     x = piece.loc[1]
-    moves = [0 for _ in range(8)]
-    if is_black(piece):
-        if piece.name[1] == 'P':    # pawn
-            if occupied[y+1][x+1] == 'W' and (x < 7 and y < 7):    # downright
-                moves[7] += 1
-            if occupied[y+1][x-1] == 'W' and (x > 0 and y < 7):    # downleft
-                moves[6] += 1  
-            
-            if piece.has_moved:
-                moves[1] += 1
-            else:
-                moves[1] += 2
-    
+    y = piece.loc[0]
+    moves = []
+
+    # 2u_1l
+    if (y-2 >= 0 and x-1 >= 0) and occupied[y-2][x-1] != name_id[piece.name[0]]:
+        moves.append(1)
     else:
-        if piece.name[1] == 'P':    # pawn
-            if occupied[y-1][x+1] == 'B' and (x < 7 and y > 0):    # upright
-                moves[5] += 1
-            if occupied[y-1][x-1] == 'B' and (x > 0 and y > 0):    # upleft
-                moves[4] += 1  
-            
-            if piece.has_moved:
-                moves[0] += 1
-            else:
-                moves[0] += 2
+        moves.append(0)
+    
+    # 2u_1r
+    if (y-2 >= 0 and x+1 < 8) and occupied[y-2][x+1] != name_id[piece.name[0]]:
+        moves.append(1)
+    else:
+        moves.append(0)
 
-    # add functionality for rooks
+    # 1u_2l
+    if (y-1 >= 0 and x-2 >= 0) and occupied[y-1][x-2] != name_id[piece.name[0]]:
+        moves.append(1)
+    else:
+        moves.append(0)
 
-def find_squares(piece):
+    # 1u_2r
+    if (y-1 >= 0 and x+2 < 8) and occupied[y-1][x+2] != name_id[piece.name[0]]:
+        moves.append(1)
+    else:
+        moves.append(0)
+
+    # 2d_1l
+    if (y+2 < 8 and x-1 >= 0) and occupied[y+2][x-1] != name_id[piece.name[0]]:
+        moves.append(1)
+    else:
+        moves.append(0)
+
+    # 2d_1r
+    if (y+2 < 8 and x+1 < 8) and occupied[y+2][x+1] != name_id[piece.name[0]]:
+        moves.append(1)
+    else:
+        moves.append(0)
+
+    # 1d_2l
+    if (y+1 < 8 and x-2 >= 0) and occupied[y+1][x-2] != name_id[piece.name[0]]:
+        moves.append(1)
+    else:
+        moves.append(0)
+
+    # 1d_2r
+    if (y+1 < 8 and x+2 < 8) and occupied[y+1][x+2] != name_id[piece.name[0]]:
+        moves.append(1)
+    else:
+        moves.append(0)
+
+    return moves
+
+
+def brq_squares(piece):
     from chess_setup import occupied
     
     pos = [piece.loc[1], piece.loc[0]]

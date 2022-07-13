@@ -34,7 +34,7 @@ def main():
                 
                 piece = select_piece(pygame.mouse.get_pos())
                 if piece is not None:
-                    available_moves(piece)
+                    print(find_moves(piece, brq_squares(piece)))
                     
 
             
