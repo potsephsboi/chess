@@ -1,8 +1,7 @@
-# TODO: fix pawn move collision with enemy pieces
+# TODO: add take functionality
+        
 
 
-
-from cmath import pi
 from chess_helper import *
 from chess_setup import *
 from chess_backend import *
@@ -22,14 +21,14 @@ def draw_window(piece):
     WIN.fill(GREY)
     display_grid(WIN)
     show_pieces()
-    if piece is not None:
-            show_piece_moves(piece)
+    if issubclass(type(piece), Piece):
+        show_piece_moves(piece)
     pygame.display.update()
 
 
 def main():
 
-    piece = None
+    temp_piece = piece = None
     clock = pygame.time.Clock()
     run = True
     while run:
@@ -40,13 +39,26 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 
-                piece = select_piece(pygame.mouse.get_pos())
-                if piece is not None:
+                piece = select_piece(pygame.mouse.get_pos()) # returns either a piece object or matrix coordinates
+
+                if issubclass(type(piece), Piece):  # var piece behaves as a Piece instance 
+                    temp_piece = piece
                     piece.moves = find_moves(piece, brq_squares(piece))
-                    # print(piece.moves)
 
+                else:    # var piece behaves as coords list
+                    
+                    if temp_piece is not None and can_move(temp_piece, piece):
+                        if type(temp_piece) is Pawn:
+                            temp_piece.has_moved = True
 
-        draw_window(piece)
+                        occupied[temp_piece.loc[0]][temp_piece.loc[1]] = 0
+                        temp_piece.loc[0], temp_piece.loc[1] = piece[1], piece[0]
+                        update_occupied(occupied)
+
+                        for p in Piece.pieces:
+                            p.moves = find_moves(p, brq_squares(p))
+
+        draw_window(temp_piece)
         
             
 
