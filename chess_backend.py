@@ -202,7 +202,6 @@ def can_move(piece, coords):
     dy = coords[1] - y
     dist = math.sqrt(dx**2+dy**2)
 
-    # [2u_1l, 2u_1r, 1u_2l, 1u_2r, 2d_1l, 2d_1r, 1d_2l, 1d_2r] 
     if dist == math.sqrt(5) and piece.name[1] == 'N':    # piece is knight
         return True
 
@@ -210,27 +209,29 @@ def can_move(piece, coords):
         return False
 
     if piece.name[1] != 'N':
-        if dy < 0 and dx == 0:  # up
-            return True if piece.moves[0] >= abs(dy) else False
-        if dy > 0 and dx == 0:  # down
-            return True if piece.moves[1] >= abs(dy) else False
-        if dy == 0 and dx < 0:  # left
-            return True if piece.moves[2] >= abs(dx) else False
-        if dy == 0 and dx > 0:  # right
-            return True if piece.moves[3] >= abs(dx) else False
+        if piece.name[1] in {'R', 'Q', 'P'}:
+            if dy < 0 and dx == 0:  # up
+                return True if piece.moves[0] >= abs(dy) else False
+            if dy > 0 and dx == 0:  # down
+                return True if piece.moves[1] >= abs(dy) else False
+            if dy == 0 and dx < 0:  # left
+                return True if piece.moves[2] >= abs(dx) else False
+            if dy == 0 and dx > 0:  # right
+                return True if piece.moves[3] >= abs(dx) else False
 
         # dy == dx for all of the above
-        if dy < 0 and dx < 0:  # upleft
-            return True if piece.moves[4] >= abs(dy) else False
+        if piece.name[1] in {'B', 'Q', 'P'}:    
+            if dy < 0 and dx < 0:  # upleft
+                return True if piece.moves[4] >= abs(dy) else False
 
-        if dy < 0 and dx > 0:  # upright
-            return True if piece.moves[5] >= abs(dy) else False
+            if dy < 0 and dx > 0:  # upright
+                return True if piece.moves[5] >= abs(dy) else False
 
-        if dy > 0 and dx < 0:  # downleft
-            return True if piece.moves[6] >= abs(dy) else False
+            if dy > 0 and dx < 0:  # downleft
+                return True if piece.moves[6] >= abs(dy) else False
 
-        if dy > 0 and dx > 0:  # downright
-            return True if piece.moves[7] >= abs(dy) else False
+            if dy > 0 and dx > 0:  # downright
+                return True if piece.moves[7] >= abs(dy) else False
 
 
 
