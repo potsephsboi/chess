@@ -22,14 +22,14 @@ def find_moves(piece, brq):     # bishop rook queen
     if piece.name[1] == 'P':
         if is_black(piece):
             if piece.has_moved:
-                return [0, 1, 0, 0, 0, 0, 0, 0]
+                return [0, 1 if brq[1] >= 1 else 0, 0, 0, 0, 0, 0, 0]
             else:
-                return [0, 2, 0, 0, 0, 0, 0, 0]
+                return [0, 2 if brq[1] >= 2 else brq[1], 0, 0, 0, 0, 0, 0]
         else:
             if piece.has_moved:
-                return [1, 0, 0, 0, 0, 0, 0, 0]
+                return [1 if brq[0] >= 1 else 0, 0, 0, 0, 0, 0, 0, 0]
             else:
-                return [2, 0, 0, 0, 0, 0, 0, 0]
+                return [2 if brq[0] >= 2 else brq[0], 0, 0, 0, 0, 0, 0, 0]
 
     elif piece.name[1] == 'R' or piece.name[1] == 'B' or piece.name[1] == 'Q':
         return brq

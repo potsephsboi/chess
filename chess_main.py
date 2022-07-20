@@ -1,5 +1,4 @@
-# TODO: in chess_helper in func show piece moves implement rest of moves
-
+# TODO: fix pawn move collision with enemy pieces
 
 
 
@@ -44,7 +43,7 @@ def main():
                 piece = select_piece(pygame.mouse.get_pos())
                 if piece is not None:
                     piece.moves = find_moves(piece, brq_squares(piece))
-                    print(piece.moves)
+                    # print(piece.moves)
 
 
         draw_window(piece)

@@ -53,21 +53,58 @@ def show_piece_moves(piece):
     y = piece.loc[0]
     x = piece.loc[1]
 
-    if piece.name[1] != 'N':
+    if piece.name[1] in {'K', 'Q', 'P'}:
         for i in range(piece.moves[0]):
-            WIN.blit(av_move, (80*x+DOT_SIZE, 80*(y-i-1)+DOT_SIZE))
+            WIN.blit(av_move, (80*x+DOT_SIZE, 80*(y-i-1)+DOT_SIZE)) # up
 
         for i in range(piece.moves[1]):
-            WIN.blit(av_move, (80*x+DOT_SIZE, 80*(y+i+1)+DOT_SIZE))
+            WIN.blit(av_move, (80*x+DOT_SIZE, 80*(y+i+1)+DOT_SIZE)) # down
 
         for i in range(piece.moves[2]):
-            WIN.blit(av_move, (80*(x-i-1)+DOT_SIZE, 80*y+DOT_SIZE))
+            WIN.blit(av_move, (80*(x-i-1)+DOT_SIZE, 80*y+DOT_SIZE)) # left
 
         for i in range(piece.moves[3]):
-            WIN.blit(av_move, (80*(x+i+1)+DOT_SIZE, 80*y+DOT_SIZE))
+            WIN.blit(av_move, (80*(x+i+1)+DOT_SIZE, 80*y+DOT_SIZE)) # right
 
-        # not finished
+        for i in range(piece.moves[4]):
+            WIN.blit(av_move, (80*(x-i-1)+DOT_SIZE, 80*(y-i-1)+DOT_SIZE)) # upleft
 
+        for i in range(piece.moves[5]):
+            WIN.blit(av_move, (80*(x+i+1)+DOT_SIZE, 80*(y-i-1)+DOT_SIZE)) # upright
+
+        for i in range(piece.moves[6]):
+            WIN.blit(av_move, (80*(x-i-1)+DOT_SIZE, 80*(y+i+1)+DOT_SIZE)) # downleft
+
+        for i in range(piece.moves[7]):
+            WIN.blit(av_move, (80*(x+i+1)+DOT_SIZE, 80*(y+i+1)+DOT_SIZE)) #downright
+    
+    elif piece.name[1] == 'B':
+        for i in range(piece.moves[4]):
+            WIN.blit(av_move, (80*(x-i-1)+DOT_SIZE, 80*(y-i-1)+DOT_SIZE)) # upleft
+
+        for i in range(piece.moves[5]):
+            WIN.blit(av_move, (80*(x+i+1)+DOT_SIZE, 80*(y-i-1)+DOT_SIZE)) # upright
+
+        for i in range(piece.moves[6]):
+            WIN.blit(av_move, (80*(x-i-1)+DOT_SIZE, 80*(y+i+1)+DOT_SIZE)) # downleft
+
+        for i in range(piece.moves[7]):
+            WIN.blit(av_move, (80*(x+i+1)+DOT_SIZE, 80*(y+i+1)+DOT_SIZE)) #downright
+   
+    
+    elif piece.name[1] == 'R':
+        for i in range(piece.moves[0]):
+            WIN.blit(av_move, (80*x+DOT_SIZE, 80*(y-i-1)+DOT_SIZE)) # up
+
+        for i in range(piece.moves[1]):
+            WIN.blit(av_move, (80*x+DOT_SIZE, 80*(y+i+1)+DOT_SIZE)) # down
+
+        for i in range(piece.moves[2]):
+            WIN.blit(av_move, (80*(x-i-1)+DOT_SIZE, 80*y+DOT_SIZE)) # left
+
+        for i in range(piece.moves[3]):
+            WIN.blit(av_move, (80*(x+i+1)+DOT_SIZE, 80*y+DOT_SIZE)) # right
+    
     else:
         if piece.moves[0]:
             WIN.blit(av_move, (80*(x-1)+DOT_SIZE, 80*(y-2)+DOT_SIZE))
@@ -85,7 +122,5 @@ def show_piece_moves(piece):
             WIN.blit(av_move, (80*(x-2)+DOT_SIZE, 80*(y+1)+DOT_SIZE))
         if piece.moves[7]:
             WIN.blit(av_move, (80*(x+2)+DOT_SIZE, 80*(y+1)+DOT_SIZE))
-        
 
-
-# [2u_1l, 2u_1r, 1u_2l, 1u_2r, 2d_1l, 2d_1r, 1d_2l, 1d_2r] 
+        # [2u_1l, 2u_1r, 1u_2l, 1u_2r, 2d_1l, 2d_1r, 1d_2l, 1d_2r] 

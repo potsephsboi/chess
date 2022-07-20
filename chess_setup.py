@@ -11,11 +11,11 @@ av_move = pygame.image.load('assets/del.png')
 p1 = Player(1, [Piece('WK', 99, [7, 4], pygame.image.load('assets/pieces/white/king.png')),
                 Piece('WQ', 9, [7, 3], pygame.image.load('assets/pieces/white/queen.png')), 
                 Piece('WB', 3, [7, 2], pygame.image.load('assets/pieces/white/bishop.png')),
-                Piece('WB', 3, [7, 5], pygame.image.load('assets/pieces/white/bishop.png')), 
+                Piece('WB', 3, [3, 5], pygame.image.load('assets/pieces/white/bishop.png')), 
                 Piece('WN', 3, [7, 1], pygame.image.load('assets/pieces/white/knight.png')),
                 Piece('WN', 3, [7, 6], pygame.image.load('assets/pieces/white/knight.png')), 
                 Piece('WR', 5, [7, 0], pygame.image.load('assets/pieces/white/rook.png')), 
-                Piece('WR', 5, [7, 7], pygame.image.load('assets/pieces/white/rook.png')), 
+                Piece('WR', 5, [4, 7], pygame.image.load('assets/pieces/white/rook.png')), 
                 
             ])
 p1pawns = [Pawn('WP', 1, [6, i], pygame.image.load('assets/pieces/white/pawn.png')) for i in range(8)] 
@@ -23,7 +23,7 @@ p1pawns = [Pawn('WP', 1, [6, i], pygame.image.load('assets/pieces/white/pawn.png
 p1.pieces += p1pawns
 
 
-p2 = Player(2, [Piece('BK', 99, [0, 4], pygame.image.load('assets/pieces/black/bking.png')),
+p2 = Player(2, [Piece('BK', 99, [4, 4], pygame.image.load('assets/pieces/black/bking.png')),
                 Piece('BQ', 9, [0, 3], pygame.image.load('assets/pieces/black/bqueen.png')), 
                 Piece('BB', 3, [0, 2], pygame.image.load('assets/pieces/black/bbishop.png')),
                 Piece('BB', 3, [0, 5], pygame.image.load('assets/pieces/black/bbishop.png')),
