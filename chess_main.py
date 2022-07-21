@@ -1,8 +1,7 @@
-# TODO: add take functionality
-        
+# TODO: implement castling, pawns to queens, en croissant
 
 
-from chess_helper import *
+from chess_frontend import *
 from chess_setup import *
 from chess_backend import *
 
@@ -53,7 +52,7 @@ def main():
                 else:    # var piece behaves as coords list        
                     if temp_piece is not None and can_move(temp_piece, piece):
                         
-                        if type(temp_piece) is Pawn:
+                        if type(temp_piece) in {Pawn, King, Rook}:
                             temp_piece.has_moved = True
 
                         if occupied[piece[1]][piece[0]] == turn * -1:
@@ -63,6 +62,14 @@ def main():
                         occupied[temp_piece.loc[0]][temp_piece.loc[1]] = 0
                         temp_piece.loc[0], temp_piece.loc[1] = piece[1], piece[0]
                         
+                        
+                        if not is_black(temp_piece) and type(temp_piece) is Pawn:
+                            if temp_piece.loc[0] == 0:
+                                make_queen(temp_piece, 1)
+                        if is_black(temp_piece) and type(temp_piece) is Pawn:
+                            if temp_piece.loc[0] == 7:
+                                make_queen(temp_piece, -1)
+
 
                         update_occupied(occupied)
 

@@ -1,4 +1,4 @@
-from chess_helper import *
+from chess_frontend import *
 from chess_backend import *
 
 WIDTH = 640

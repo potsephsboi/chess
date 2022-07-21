@@ -1,6 +1,6 @@
 import math
 from chess_classes import *
-
+import pygame
 
 name_id = {
     'W': 1, 
@@ -30,9 +30,6 @@ def select_piece(mouse, turn):
 
     return list(map(lambda x: x // 80, list(mouse)))
 
-    
-# [up(pos, 0), down(pos, 0), left(pos, 0), right(pos, 0), 
-#             upleft(pos, 0), upright(pos, 0), downleft(pos, 0), downright(pos, 0)]
 
 def find_moves(piece, brq):     # bishop rook queen
     from chess_setup import occupied
@@ -42,25 +39,24 @@ def find_moves(piece, brq):     # bishop rook queen
             
             if piece.has_moved:
                 return [0, 1 if brq[1] >= 1 else 0, 0, 0, 0, 0,
-                (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0) if piece.loc[1] > 0 else 0,
-                (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 else 0]
+                (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0) if piece.loc[1] > 0 and piece.loc[0] < 7 else 0,
+                (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0]
             else:
                 return [0, 2 if brq[1] >= 2 else brq[1], 0, 0, 0, 0,
-                (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0) if piece.loc[1] > 0 else 0,
-                (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 else 0]
+                (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0) if piece.loc[1] > 0 and piece.loc[0] < 7 else 0,
+                (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0]
 
                  
         else:
             if piece.has_moved:
-                print(occupied[piece.loc[0]-1][piece.loc[1]-1])
                 return [1 if brq[0] >= 1 else 0, 0, 0, 0,
-                (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 else 0) if piece.loc[1] > 0 else 0,
-                (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 else 0) if piece.loc[1] < 7 else 0,
+                (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 else 0) if piece.loc[1] > 0  and piece.loc[0] > 0 else 0,
+                (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 else 0) if piece.loc[1] < 7 and piece.loc[0] > 0 else 0,
                 0, 0]
             else:
                 return [2 if brq[0] >= 2 else brq[0], 0, 0, 0,
-                (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 else 0) if piece.loc[1] > 0 else 0,
-                (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 else 0) if piece.loc[1] < 7 else 0,
+                (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 else 0) if piece.loc[1] > 0 and piece.loc[0] > 0 else 0,
+                (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 else 0) if piece.loc[1] < 7 and piece.loc[0] > 0 else 0,
                 0, 0]
 
     elif piece.name[1] == 'R' or piece.name[1] == 'B' or piece.name[1] == 'Q':
@@ -259,18 +255,27 @@ def can_move(piece, coords):
                 return True if piece.moves[7] >= abs(dy) else False
 
 
-def remove_piece(piece, turn):
+def remove_piece(piece_coords, turn):
     from chess_setup import p1, p2
 
     if turn == 1:
         for p in p2.pieces:
-            if [p.loc[1], p.loc[0]] == [piece[0], piece[1]]:
+            if [p.loc[1], p.loc[0]] == [piece_coords[0], piece_coords[1]]:
                 p2.pieces.remove(p)
     elif turn == -1:
         for p in p1.pieces:
-            if [p.loc[1], p.loc[0]] == [piece[0], piece[1]]:
+            if [p.loc[1], p.loc[0]] == [piece_coords[0], piece_coords[1]]:
                 p1.pieces.remove(p)
 
 
+def make_queen(pawn, turn):
+    from chess_setup import p1, p2
 
+    if turn == 1:
+        p1.pieces.remove(pawn)
+        p1.pieces.append(Piece('WQ', 9, [pawn.loc[0], pawn.loc[1]], pygame.image.load('assets/pieces/white/queen.png')))
+    
+    elif turn == -1:
+        p2.pieces.remove(pawn)
+        p2.pieces.append(Piece('BQ', 9, [pawn.loc[0], pawn.loc[1]], pygame.image.load('assets/pieces/black/bqueen.png')))
 
