@@ -14,15 +14,23 @@ def is_black(piece):
     return piece.name[0] == 'B'
 
 
-def select_piece(mouse):
+def select_piece(mouse, turn):
     from chess_setup import p1, p2
     
-    for piece in p1.pieces + p2.pieces:     
-        if piece.loc[1]*80 < mouse[0] < (piece.loc[1]+1)*80 and piece.loc[0]*80 < mouse[1] < (piece.loc[0]+1)*80:
-            return piece
-    
+
+    if turn == -1:
+        for piece in p2.pieces:     
+            if piece.loc[1]*80 < mouse[0] < (piece.loc[1]+1)*80 and piece.loc[0]*80 < mouse[1] < (piece.loc[0]+1)*80:
+                return piece
+
+    if turn == 1:
+        for piece in p1.pieces:     
+            if piece.loc[1]*80 < mouse[0] < (piece.loc[1]+1)*80 and piece.loc[0]*80 < mouse[1] < (piece.loc[0]+1)*80:
+                return piece
+
     return list(map(lambda x: x // 80, list(mouse)))
 
+    
 
 def find_moves(piece, brq):     # bishop rook queen
     
@@ -209,7 +217,7 @@ def can_move(piece, coords):
         return False
 
     if piece.name[1] != 'N':
-        if piece.name[1] in {'R', 'Q', 'P'}:
+        if piece.name[1] in {'R', 'Q', 'P', 'K'}:
             if dy < 0 and dx == 0:  # up
                 return True if piece.moves[0] >= abs(dy) else False
             if dy > 0 and dx == 0:  # down
@@ -220,7 +228,7 @@ def can_move(piece, coords):
                 return True if piece.moves[3] >= abs(dx) else False
 
         # dy == dx for all of the above
-        if piece.name[1] in {'B', 'Q', 'P'}:    
+        if piece.name[1] in {'B', 'Q', 'P', 'K'}:    
             if dy < 0 and dx < 0:  # upleft
                 return True if piece.moves[4] >= abs(dy) else False
 
@@ -234,7 +242,17 @@ def can_move(piece, coords):
                 return True if piece.moves[7] >= abs(dy) else False
 
 
+def remove_piece(piece, turn):
+    from chess_setup import p1, p2
 
+    if turn == 1:
+        for p in p2.pieces:
+            if [p.loc[1], p.loc[0]] == [piece[0], piece[1]]:
+                p2.pieces.remove(p)
+    elif turn == -1:
+        for p in p1.pieces:
+            if [p.loc[1], p.loc[0]] == [piece[0], piece[1]]:
+                p1.pieces.remove(p)
 
 
 

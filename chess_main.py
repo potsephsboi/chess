@@ -28,6 +28,7 @@ def draw_window(piece):
 
 def main():
 
+    turn = 1
     temp_piece = piece = None
     clock = pygame.time.Clock()
     run = True
@@ -39,24 +40,37 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 
-                piece = select_piece(pygame.mouse.get_pos()) # returns either a piece object or matrix coordinates
+                piece = select_piece(pygame.mouse.get_pos(), turn=turn) # returns either a piece object or matrix coordinates
+                
+                
 
-                if issubclass(type(piece), Piece):  # var piece behaves as a Piece instance 
+                if issubclass(type(piece), Piece):  # var piece behaves as a Piece instance
+                    if piece.name[0] != turn_id[turn]:
+                        continue 
                     temp_piece = piece
                     piece.moves = find_moves(piece, brq_squares(piece))
 
-                else:    # var piece behaves as coords list
-                    
+                else:    # var piece behaves as coords list        
                     if temp_piece is not None and can_move(temp_piece, piece):
+                        
                         if type(temp_piece) is Pawn:
                             temp_piece.has_moved = True
 
+                        if occupied[piece[1]][piece[0]] == turn * -1:
+                           remove_piece(piece, turn)
+                                
+
                         occupied[temp_piece.loc[0]][temp_piece.loc[1]] = 0
                         temp_piece.loc[0], temp_piece.loc[1] = piece[1], piece[0]
+                        
+
                         update_occupied(occupied)
 
                         for p in Piece.pieces:
                             p.moves = find_moves(p, brq_squares(p))
+                        
+                        turn *= -1
+                        temp_piece = None
 
         draw_window(temp_piece)
         

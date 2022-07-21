@@ -13,6 +13,11 @@ col_dict = {
 
 }
 
+turn_id = {
+    1: 'W', 
+    -1: 'B'
+}
+
 DOT_SIZE = 30
 
 
