@@ -31,20 +31,37 @@ def select_piece(mouse, turn):
     return list(map(lambda x: x // 80, list(mouse)))
 
     
+# [up(pos, 0), down(pos, 0), left(pos, 0), right(pos, 0), 
+#             upleft(pos, 0), upright(pos, 0), downleft(pos, 0), downright(pos, 0)]
 
 def find_moves(piece, brq):     # bishop rook queen
-    
+    from chess_setup import occupied
+
     if piece.name[1] == 'P':
         if is_black(piece):
+            
             if piece.has_moved:
-                return [0, 1 if brq[1] >= 1 else 0, 0, 0, 0, 0, 0, 0]
+                return [0, 1 if brq[1] >= 1 else 0, 0, 0, 0, 0,
+                (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0) if piece.loc[1] > 0 else 0,
+                (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 else 0]
             else:
-                return [0, 2 if brq[1] >= 2 else brq[1], 0, 0, 0, 0, 0, 0]
+                return [0, 2 if brq[1] >= 2 else brq[1], 0, 0, 0, 0,
+                (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0) if piece.loc[1] > 0 else 0,
+                (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 else 0]
+
+                 
         else:
             if piece.has_moved:
-                return [1 if brq[0] >= 1 else 0, 0, 0, 0, 0, 0, 0, 0]
+                print(occupied[piece.loc[0]-1][piece.loc[1]-1])
+                return [1 if brq[0] >= 1 else 0, 0, 0, 0,
+                (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 else 0) if piece.loc[1] > 0 else 0,
+                (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 else 0) if piece.loc[1] < 7 else 0,
+                0, 0]
             else:
-                return [2 if brq[0] >= 2 else brq[0], 0, 0, 0, 0, 0, 0, 0]
+                return [2 if brq[0] >= 2 else brq[0], 0, 0, 0,
+                (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 else 0) if piece.loc[1] > 0 else 0,
+                (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 else 0) if piece.loc[1] < 7 else 0,
+                0, 0]
 
     elif piece.name[1] == 'R' or piece.name[1] == 'B' or piece.name[1] == 'Q':
         return brq

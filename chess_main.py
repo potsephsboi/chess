@@ -71,7 +71,7 @@ def main():
                         
                         turn *= -1
                         temp_piece = None
-
+                        
         draw_window(temp_piece)
         
             
