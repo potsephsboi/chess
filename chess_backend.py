@@ -1,3 +1,4 @@
+from cmath import pi
 import math
 from chess_classes import *
 import pygame
@@ -62,9 +63,10 @@ def find_moves(piece, brq):     # bishop rook queen
     elif piece.name[1] == 'R' or piece.name[1] == 'B' or piece.name[1] == 'Q':
         return brq
     
-    elif piece.name[1] == 'K':
-        return [1 if brq[i] != 0 else brq[i] for i in range(8)]
-
+    elif piece.name[1] == 'K':    
+        can_castle = check_castling_rights(piece)                                                       
+        return [1 if brq[i] != 0 else brq[i] for i in range(8)] + [can_castle[0], can_castle[1]]
+                                                                    # ^short        ^long
     elif piece.name[1] == 'N':
         return knight_squares(piece) # -> int list: [2u_1l, 2u_1r, 1u_2l, 1u_2r, 2d_1l, 2d_1r, 1d_2l, 1d_2r]  
 
@@ -223,14 +225,22 @@ def can_move(piece, coords):
     dy = coords[1] - y
     dist = math.sqrt(dx**2+dy**2)
 
-    if dist == math.sqrt(5) and piece.name[1] == 'N':    # piece is knight
+    # piece is knight
+    if dist == math.sqrt(5) and piece.name[1] == 'N':    
         return True
 
     if not (abs(dy) == abs(dx) or (dx == 0 or dy == 0)):
         return False
 
     if piece.name[1] != 'N':
+        # dx == 0 or dy == 0
         if piece.name[1] in {'R', 'Q', 'P', 'K'}:
+            if piece.name[1] == 'K':
+                                        # short ---- long
+                if (dx == 2 and piece.moves[-2]) or (dx == 3 and piece.moves[-1]):
+                    return True
+                
+
             if dy < 0 and dx == 0:  # up
                 return True if piece.moves[0] >= abs(dy) else False
             if dy > 0 and dx == 0:  # down
@@ -240,7 +250,7 @@ def can_move(piece, coords):
             if dy == 0 and dx > 0:  # right
                 return True if piece.moves[3] >= abs(dx) else False
 
-        # dy == dx for all of the above
+        # dy == dx
         if piece.name[1] in {'B', 'Q', 'P', 'K'}:    
             if dy < 0 and dx < 0:  # upleft
                 return True if piece.moves[4] >= abs(dy) else False
@@ -253,6 +263,51 @@ def can_move(piece, coords):
 
             if dy > 0 and dx > 0:  # downright
                 return True if piece.moves[7] >= abs(dy) else False
+
+def check_castling_rights(king):
+    from chess_setup import occupied
+
+    if king.has_moved:
+        return [0, 0]
+    
+    kingx = king.loc[1]
+    kingy = king.loc[0]
+    castle = [0, 0]
+
+    
+    # short
+    if occupied[kingy][kingx+1] == 0 and occupied[kingy][kingx+2] == 0:
+        for r in Rook.brooks + Rook.wrooks:
+            if not r.has_moved and [r.loc[0], r.loc[1]] == [kingy, kingx+3]:
+                castle[0] = 1
+            
+    # long
+    if occupied[kingy][kingx-1] == 0 and occupied[kingy][kingx-2] == 0 and occupied[kingy][kingx-3] == 0:
+        for r in Rook.brooks + Rook.wrooks:
+            if not r.has_moved and [r.loc[0], r.loc[1]] == [kingy, kingx-4]:
+                castle[1] = 1
+
+    return castle
+   
+def move(piece, coords, turn):
+    from chess_setup import occupied
+
+    if type(piece) in {Pawn, King, Rook}:
+        piece.has_moved = True
+
+    if occupied[coords[1]][coords[0]] == turn * -1:
+        remove_piece(coords, turn)
+
+    occupied[piece.loc[0]][piece.loc[1]] = 0
+    piece.loc[0], piece.loc[1] = coords[1], coords[0]
+    
+    
+    if not is_black(piece) and type(piece) is Pawn:
+        if piece.loc[0] == 0:
+            make_queen(piece, 1)
+    if is_black(piece) and type(piece) is Pawn:
+        if piece.loc[0] == 7:
+            make_queen(piece, -1)
 
 
 def remove_piece(piece_coords, turn):

@@ -36,9 +36,17 @@ class Bishop(Piece):
 
 
 class Rook(Piece):
+    brooks = []
+    wrooks = []
+
     def __init__(self, name, value, loc, image):
         super().__init__(name, value, loc, image)
-        
+        if self.name[0] == 'B': 
+            Rook.brooks.append(self)
+        else:
+            Rook.wrooks.append(self)
+            
+        self.has_moved = False 
 
 
 class Queen(Piece):
@@ -49,3 +57,5 @@ class Queen(Piece):
 class King(Piece):
     def __init__(self, name, value, loc, image):
         super().__init__(name, value, loc, image)
+        self.castle = False
+        self.has_moved = False 

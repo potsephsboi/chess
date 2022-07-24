@@ -82,7 +82,19 @@ def show_piece_moves(piece):
 
         for i in range(piece.moves[7]):
             WIN.blit(av_move, (80*(x+i+1)+DOT_SIZE, 80*(y+i+1)+DOT_SIZE)) #downright
-    
+
+        # handle castling
+        if piece.name[1] == 'K':
+            if piece.moves[-2]:
+                for i in range(2):
+                    WIN.blit(av_move, (80*(x+i+1)+DOT_SIZE, 80*y+DOT_SIZE))
+            if piece.moves[-1]:
+                print(123)
+                for i in range(3):
+                    WIN.blit(av_move, (80*(x-i-1)+DOT_SIZE, 80*y+DOT_SIZE))
+
+
+
     elif piece.name[1] == 'B':
         for i in range(piece.moves[4]):
             WIN.blit(av_move, (80*(x-i-1)+DOT_SIZE, 80*(y-i-1)+DOT_SIZE)) # upleft
@@ -110,6 +122,7 @@ def show_piece_moves(piece):
         for i in range(piece.moves[3]):
             WIN.blit(av_move, (80*(x+i+1)+DOT_SIZE, 80*y+DOT_SIZE)) # right
     
+    # knight
     else:
         if piece.moves[0]:
             WIN.blit(av_move, (80*(x-1)+DOT_SIZE, 80*(y-2)+DOT_SIZE))

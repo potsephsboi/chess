@@ -1,4 +1,4 @@
-# TODO: implement castling, pawns to queens, en croissant
+# TODO: implement castling, en croissant, checkmate, stalemate
 
 
 from chess_frontend import *
@@ -41,8 +41,6 @@ def main():
                 
                 piece = select_piece(pygame.mouse.get_pos(), turn=turn) # returns either a piece object or matrix coordinates
                 
-                
-
                 if issubclass(type(piece), Piece):  # var piece behaves as a Piece instance
                     if piece.name[0] != turn_id[turn]:
                         continue 
@@ -51,26 +49,7 @@ def main():
 
                 else:    # var piece behaves as coords list        
                     if temp_piece is not None and can_move(temp_piece, piece):
-                        
-                        if type(temp_piece) in {Pawn, King, Rook}:
-                            temp_piece.has_moved = True
-
-                        if occupied[piece[1]][piece[0]] == turn * -1:
-                           remove_piece(piece, turn)
-                                
-
-                        occupied[temp_piece.loc[0]][temp_piece.loc[1]] = 0
-                        temp_piece.loc[0], temp_piece.loc[1] = piece[1], piece[0]
-                        
-                        
-                        if not is_black(temp_piece) and type(temp_piece) is Pawn:
-                            if temp_piece.loc[0] == 0:
-                                make_queen(temp_piece, 1)
-                        if is_black(temp_piece) and type(temp_piece) is Pawn:
-                            if temp_piece.loc[0] == 7:
-                                make_queen(temp_piece, -1)
-
-
+                        move(temp_piece, piece, turn)
                         update_occupied(occupied)
 
                         for p in Piece.pieces:
