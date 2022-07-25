@@ -237,7 +237,8 @@ def can_move(piece, coords):
         if piece.name[1] in {'R', 'Q', 'P', 'K'}:
             if piece.name[1] == 'K':
                                         # short ---- long
-                if (dx == 2 and piece.moves[-2]) or (dx == 3 and piece.moves[-1]):
+
+                if (abs(dx) == 2 and piece.moves[-2]) or (abs(dx) == 2 and piece.moves[-1]):
                     return True
                 
 
@@ -289,11 +290,28 @@ def check_castling_rights(king):
 
     return castle
    
+                # x, y
 def move(piece, coords, turn):
     from chess_setup import occupied
 
     if type(piece) in {Pawn, King, Rook}:
         piece.has_moved = True
+
+    if type(piece) == King:
+        # short
+        if coords[0] - piece.loc[1] == 2:
+            for r in Rook.wrooks + Rook.brooks:
+                if r.loc == [piece.loc[0], piece.loc[1]+3]:
+                    move(r, [piece.loc[1]+1, piece.loc[0]], turn)
+                    break
+
+        # long
+        elif coords[0] - piece.loc[1] == -2:
+            for r in Rook.wrooks + Rook.brooks:
+                if r.loc == [piece.loc[0], piece.loc[1]-4]:
+                    move(r, [piece.loc[1]-1, piece.loc[0]], turn)
+                    break
+
 
     if occupied[coords[1]][coords[0]] == turn * -1:
         remove_piece(coords, turn)

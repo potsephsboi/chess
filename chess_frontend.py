@@ -89,8 +89,7 @@ def show_piece_moves(piece):
                 for i in range(2):
                     WIN.blit(av_move, (80*(x+i+1)+DOT_SIZE, 80*y+DOT_SIZE))
             if piece.moves[-1]:
-                print(123)
-                for i in range(3):
+                for i in range(2):
                     WIN.blit(av_move, (80*(x-i-1)+DOT_SIZE, 80*y+DOT_SIZE))
 
 

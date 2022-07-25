@@ -49,6 +49,7 @@ def main():
 
                 else:    # var piece behaves as coords list        
                     if temp_piece is not None and can_move(temp_piece, piece):
+                                        # x, y
                         move(temp_piece, piece, turn)
                         update_occupied(occupied)
 
