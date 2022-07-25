@@ -1,4 +1,4 @@
-# TODO: implement castling, en croissant, checkmate, stalemate
+# TODO: implement en croissant, checkmate, stalemate
 
 
 from chess_frontend import *
@@ -50,14 +50,18 @@ def main():
                 else:    # var piece behaves as coords list        
                     if temp_piece is not None and can_move(temp_piece, piece):
                                         # x, y
-                        move(temp_piece, piece, turn)
+                        move(temp_piece, piece, turn)   
                         update_occupied(occupied)
 
                         for p in Piece.pieces:
                             p.moves = find_moves(p, brq_squares(p))
                         
+                        
                         turn *= -1
                         temp_piece = None
+                         
+                        for row in occupied:
+                            print(row)
                         
         draw_window(temp_piece)
         

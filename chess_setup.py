@@ -53,3 +53,4 @@ def update_occupied(occ):
 update_occupied(occupied)
 
 
+

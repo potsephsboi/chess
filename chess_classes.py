@@ -18,9 +18,10 @@ class Piece:
         self.moves = []
         Piece.pieces.append(self)
     def __repr__(self):
-        return f'Piece name: {self.name} -- Piece moves: {self.moves}'
+        return f'Piece name: {self.name} -- Piece loc: {self.loc}'
 
 class Pawn(Piece):
+    enpassan = None
     def __init__(self, name, value, loc, image):
         super().__init__(name, value, loc, image)
         self.has_moved = False

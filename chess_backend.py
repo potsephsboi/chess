@@ -1,4 +1,3 @@
-from cmath import pi
 import math
 from chess_classes import *
 import pygame
@@ -37,23 +36,57 @@ def find_moves(piece, brq):     # bishop rook queen
 
     if piece.name[1] == 'P':
         if is_black(piece):
-            
             if piece.has_moved:
+                
                 return [0, 1 if brq[1] >= 1 else 0, 0, 0, 0, 0,
-                (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0) if piece.loc[1] > 0 and piece.loc[0] < 7 else 0,
-                (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0]
+
+                # left enpassan
+                (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 or
+                
+                (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]-1] else False)
+
+                else 0)
+                
+                if piece.loc[1] > 0 and piece.loc[0] < 7 else 0,
+
+                # right enpassan
+                (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 or
+                
+                (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]+1] else False)
+                
+                else 0)
+                
+                if piece.loc[1] < 7 and piece.loc[0] < 7 else 0]
             else:
                 return [0, 2 if brq[1] >= 2 else brq[1], 0, 0, 0, 0,
-                (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0) if piece.loc[1] > 0 and piece.loc[0] < 7 else 0,
+                (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0)
+                 if piece.loc[1] > 0 and piece.loc[0] < 7 else 0,
                 (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0]
 
                  
         else:
             if piece.has_moved:
                 return [1 if brq[0] >= 1 else 0, 0, 0, 0,
-                (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 else 0) if piece.loc[1] > 0  and piece.loc[0] > 0 else 0,
-                (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 else 0) if piece.loc[1] < 7 and piece.loc[0] > 0 else 0,
-                0, 0]
+                # left enpassan
+                (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 or
+                
+                (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]-1] else False)
+
+                else 0)
+                
+                if piece.loc[1] > 0 and piece.loc[0] < 7 else 0,
+
+                # right enpassan
+                (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 or
+                
+                (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]+1] else False)
+                
+                else 0)
+                
+                if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
+                
+                ,0, 0]
+
             else:
                 return [2 if brq[0] >= 2 else brq[0], 0, 0, 0,
                 (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 else 0) if piece.loc[1] > 0 and piece.loc[0] > 0 else 0,
@@ -294,9 +327,16 @@ def check_castling_rights(king):
 def move(piece, coords, turn):
     from chess_setup import occupied
 
+    temp_enpassan = Pawn.enpassan
+    Pawn.enpassan = None
+    
     if type(piece) in {Pawn, King, Rook}:
+        if type(piece) == Pawn and not piece.has_moved and abs(coords[1] - piece.loc[0]) == 2:
+            Pawn.enpassan = piece
+            
         piece.has_moved = True
-
+    
+    # castling
     if type(piece) == King:
         # short
         if coords[0] - piece.loc[1] == 2:
@@ -315,11 +355,17 @@ def move(piece, coords, turn):
 
     if occupied[coords[1]][coords[0]] == turn * -1:
         remove_piece(coords, turn)
+    
+    if type(piece) == Pawn:
+        if temp_enpassan is not None and coords[0] == temp_enpassan.loc[1] and abs(coords[1] - temp_enpassan.loc[0]) == 1:
+            occupied[temp_enpassan.loc[0]][temp_enpassan.loc[1]] = 0
+            remove_piece([temp_enpassan.loc[1], temp_enpassan.loc[0]], turn)
+            
 
     occupied[piece.loc[0]][piece.loc[1]] = 0
     piece.loc[0], piece.loc[1] = coords[1], coords[0]
     
-    
+    # queening
     if not is_black(piece) and type(piece) is Pawn:
         if piece.loc[0] == 0:
             make_queen(piece, 1)
@@ -334,6 +380,7 @@ def remove_piece(piece_coords, turn):
     if turn == 1:
         for p in p2.pieces:
             if [p.loc[1], p.loc[0]] == [piece_coords[0], piece_coords[1]]:
+                print(p.loc)
                 p2.pieces.remove(p)
     elif turn == -1:
         for p in p1.pieces:
@@ -351,4 +398,5 @@ def make_queen(pawn, turn):
     elif turn == -1:
         p2.pieces.remove(pawn)
         p2.pieces.append(Piece('BQ', 9, [pawn.loc[0], pawn.loc[1]], pygame.image.load('assets/pieces/black/bqueen.png')))
+
 

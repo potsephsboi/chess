@@ -82,7 +82,7 @@ def show_piece_moves(piece):
 
         for i in range(piece.moves[7]):
             WIN.blit(av_move, (80*(x+i+1)+DOT_SIZE, 80*(y+i+1)+DOT_SIZE)) #downright
-
+ 
         # handle castling
         if piece.name[1] == 'K':
             if piece.moves[-2]:
