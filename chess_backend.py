@@ -68,7 +68,7 @@ def find_moves(piece, brq):     # bishop rook queen
             if piece.has_moved:
                 return [1 if brq[0] >= 1 else 0, 0, 0, 0,
                 # left enpassan
-                (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 or
+                (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 or
                 
                 (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]-1] else False)
 
@@ -77,7 +77,7 @@ def find_moves(piece, brq):     # bishop rook queen
                 if piece.loc[1] > 0 and piece.loc[0] < 7 else 0,
 
                 # right enpassan
-                (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 or
+                (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 or
                 
                 (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]+1] else False)
                 
@@ -380,7 +380,6 @@ def remove_piece(piece_coords, turn):
     if turn == 1:
         for p in p2.pieces:
             if [p.loc[1], p.loc[0]] == [piece_coords[0], piece_coords[1]]:
-                print(p.loc)
                 p2.pieces.remove(p)
     elif turn == -1:
         for p in p1.pieces:

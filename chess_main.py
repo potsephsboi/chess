@@ -60,8 +60,8 @@ def main():
                         turn *= -1
                         temp_piece = None
                          
-                        for row in occupied:
-                            print(row)
+                        # for row in occupied:
+                        #     print(row)
                         
         draw_window(temp_piece)
         
