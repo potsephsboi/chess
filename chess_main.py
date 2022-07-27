@@ -1,6 +1,3 @@
-# TODO: implement en croissant, checkmate, stalemate
-
-
 from chess_frontend import *
 from chess_setup import *
 from chess_backend import *

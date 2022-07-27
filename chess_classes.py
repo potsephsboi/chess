@@ -56,7 +56,9 @@ class Queen(Piece):
 
 
 class King(Piece):
+    kings = []
     def __init__(self, name, value, loc, image):
         super().__init__(name, value, loc, image)
         self.castle = False
-        self.has_moved = False 
+        self.has_moved = False
+        King.kings.append(self) 

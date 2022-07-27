@@ -1,3 +1,4 @@
+from cmath import sqrt
 import math
 from chess_classes import *
 import pygame
@@ -56,19 +57,23 @@ def find_moves(piece, brq):     # bishop rook queen
                 
                 else 0)
                 
-                if piece.loc[1] < 7 and piece.loc[0] < 7 else 0]
+                if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
+                # check if opposite colour king is in diagonal squares
+                ]
             else:
                 return [0, 2 if brq[1] >= 2 else brq[1], 0, 0, 0, 0,
                 (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0)
                  if piece.loc[1] > 0 and piece.loc[0] < 7 else 0,
-                (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0]
+                (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
+                # check if opposite colour king is in diagonal squares
+                ]
 
                  
         else:
             if piece.has_moved:
                 return [1 if brq[0] >= 1 else 0, 0, 0, 0,
                 # left enpassan
-                (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 or
+                (1 if (occupied[piece.loc[0]-1][piece.loc[1]-1] == -1) or
                 
                 (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]-1] else False)
 
@@ -85,13 +90,17 @@ def find_moves(piece, brq):     # bishop rook queen
                 
                 if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
                 
-                ,0, 0]
+                ,0, 0
+                # check if opposite colour king is in diagonal squares
+                ]
 
             else:
                 return [2 if brq[0] >= 2 else brq[0], 0, 0, 0,
                 (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 else 0) if piece.loc[1] > 0 and piece.loc[0] > 0 else 0,
                 (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 else 0) if piece.loc[1] < 7 and piece.loc[0] > 0 else 0,
-                0, 0]
+                0, 0
+                # check if opposite colour king is in diagonal squares
+                ]
 
     elif piece.name[1] == 'R' or piece.name[1] == 'B' or piece.name[1] == 'Q':
         return brq
@@ -159,16 +168,33 @@ def knight_squares(piece):
     else:
         moves.append(0)
 
+    for k in King.kings:
+        if k.name[0] != piece.name[0] and math.sqrt((k.loc[1] - piece.loc[1])**2 + (k.loc[0] - piece.loc[0])**2) == math.sqrt(5):
+            moves.append(True)
+        else:
+            moves.append(False)
+
     return moves
 
 
+def detect_check(piece, pos):
+    for king in King.kings:
+        if piece.name[0] != king.name[0] and king.loc == [pos[1], pos[0]]:
+            return True
+    
+
 def brq_squares(piece):
     from chess_setup import occupied
-    
+
+    global check
+
     pos = [piece.loc[1], piece.loc[0]]
+    check = False
 
     # pos[0] == x, pos[1] == y
     def up(pos, n):
+        global check
+        check = (detect_check(piece, pos) if detect_check(piece, pos) is not None else check) if piece.name[1] in {'R', 'Q'} else check  
         if pos[1]-1 < 0 or occupied[pos[1]-1][pos[0]] == name_id[piece.name[0]]:
             return n
         if occupied[pos[1]-1][pos[0]]*(-1) == name_id[piece.name[0]]:
@@ -182,6 +208,8 @@ def brq_squares(piece):
         
             
     def down(pos, n):
+        global check
+        check = (detect_check(piece, pos) if detect_check(piece, pos) is not None else check) if piece.name[1] in {'R', 'Q'} else check
         if pos[1]+1 > 7 or occupied[pos[1]+1][pos[0]] == name_id[piece.name[0]]:
             return n
         if occupied[pos[1]+1][pos[0]]*(-1) == name_id[piece.name[0]]:
@@ -194,6 +222,8 @@ def brq_squares(piece):
         return down([pos[0], pos[1]+1], n)
 
     def left(pos, n):
+        global check
+        check = (detect_check(piece, pos) if detect_check(piece, pos) is not None else check) if piece.name[1] in {'R', 'Q'} else check
         if pos[0]-1 < 0 or occupied[pos[1]][pos[0]-1] == name_id[piece.name[0]]:
             return n
         if occupied[pos[1]][pos[0]-1]*(-1) == name_id[piece.name[0]]:
@@ -203,6 +233,8 @@ def brq_squares(piece):
         return left([pos[0]-1, pos[1]], n)
 
     def right(pos, n):
+        global check
+        check = (detect_check(piece, pos) if detect_check(piece, pos) is not None else check) if piece.name[1] in {'R', 'Q'} else check
         if pos[0]+1 > 7 or occupied[pos[1]][pos[0]+1] == name_id[piece.name[0]]:
             return n
         if occupied[pos[1]][pos[0]+1]*(-1) == name_id[piece.name[0]]:
@@ -212,6 +244,8 @@ def brq_squares(piece):
         return right([pos[0]+1, pos[1]], n)
 
     def upleft(pos, n):
+        global check
+        check = (detect_check(piece, pos) if detect_check(piece, pos) is not None else check) if piece.name[1] in {'B', 'Q'} else check
         if (pos[1]-1 < 0 or pos[0]-1 < 0) or occupied[pos[1]-1][pos[0]-1] == name_id[piece.name[0]]:
             return n
         if occupied[pos[1]-1][pos[0]-1]*(-1) == name_id[piece.name[0]]:
@@ -221,6 +255,8 @@ def brq_squares(piece):
         return upleft([pos[0]-1, pos[1]-1], n)
     
     def upright(pos, n):
+        global check
+        check = (detect_check(piece, pos) if detect_check(piece, pos) is not None else check) if piece.name[1] in {'B', 'Q'} else check
         if (pos[1]-1 < 0 or pos[0]+1 > 7) or occupied[pos[1]-1][pos[0]+1] == name_id[piece.name[0]]:
             return n
         if occupied[pos[1]-1][pos[0]+1]*(-1) == name_id[piece.name[0]]:
@@ -230,6 +266,8 @@ def brq_squares(piece):
         return upright([pos[0]+1, pos[1]-1], n)
 
     def downleft(pos, n):
+        global check
+        check = (detect_check(piece, pos) if detect_check(piece, pos) is not None else check) if piece.name[1] in {'B', 'Q'} else check
         if (pos[0]-1 < 0 or pos[1]+1 > 7) or occupied[pos[1]+1][pos[0]-1] == name_id[piece.name[0]]:
             return n
         if occupied[pos[1]+1][pos[0]-1]*(-1) == name_id[piece.name[0]]:
@@ -239,6 +277,8 @@ def brq_squares(piece):
         return downleft([pos[0]-1, pos[1]+1], n)
 
     def downright(pos, n):
+        global check
+        check = (detect_check(piece, pos) if detect_check(piece, pos) is not None else check) if piece.name[1] in {'B', 'Q'} else check
         if (pos[0]+1 > 7 or pos[1]+1 > 7) or occupied[pos[1]+1][pos[0]+1] == name_id[piece.name[0]]:
             return n
         if occupied[pos[1]+1][pos[0]+1]*(-1) == name_id[piece.name[0]]:
@@ -249,7 +289,7 @@ def brq_squares(piece):
 
 
     return [up(pos, 0), down(pos, 0), left(pos, 0), right(pos, 0), 
-            upleft(pos, 0), upright(pos, 0), downleft(pos, 0), downright(pos, 0)]
+            upleft(pos, 0), upright(pos, 0), downleft(pos, 0), downright(pos, 0), check]
 
 
 def can_move(piece, coords):
@@ -329,13 +369,7 @@ def move(piece, coords, turn):
 
     temp_enpassan = Pawn.enpassan
     Pawn.enpassan = None
-    
-    if type(piece) in {Pawn, King, Rook}:
-        if type(piece) == Pawn and not piece.has_moved and abs(coords[1] - piece.loc[0]) == 2:
-            Pawn.enpassan = piece
-            
-        piece.has_moved = True
-    
+ 
     # castling
     if type(piece) == King:
         # short
@@ -357,10 +391,15 @@ def move(piece, coords, turn):
         remove_piece(coords, turn)
     
     if type(piece) == Pawn:
-        if temp_enpassan is not None and coords[0] == temp_enpassan.loc[1] and abs(coords[1] - temp_enpassan.loc[0]) == 1:
+        if piece.has_moved and temp_enpassan is not None and coords[0] == temp_enpassan.loc[1] and abs(coords[1] - temp_enpassan.loc[0]) == 1:
             occupied[temp_enpassan.loc[0]][temp_enpassan.loc[1]] = 0
             remove_piece([temp_enpassan.loc[1], temp_enpassan.loc[0]], turn)
             
+    if type(piece) in {Pawn, King, Rook}:
+        if type(piece) == Pawn and not piece.has_moved and abs(coords[1] - piece.loc[0]) == 2:
+            Pawn.enpassan = piece
+            
+        piece.has_moved = True
 
     occupied[piece.loc[0]][piece.loc[1]] = 0
     piece.loc[0], piece.loc[1] = coords[1], coords[0]
