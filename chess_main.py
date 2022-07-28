@@ -26,6 +26,8 @@ def main():
 
     turn = 1
     temp_piece = piece = None
+    check = [False, False]
+
     clock = pygame.time.Clock()
     run = True
     while run:
@@ -53,7 +55,10 @@ def main():
                         for p in Piece.pieces:
                             p.moves = find_moves(p, brq_squares(p))
                         
-                        
+                        for p in p1.pieces:
+                            print(p.name[1], ': ', p.moves[-1])
+                        print(' --- --- --- --- ---')
+
                         turn *= -1
                         temp_piece = None
                          
@@ -69,3 +74,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
