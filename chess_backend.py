@@ -332,7 +332,8 @@ def avoid_check(piece, turn, coords, in_check):
             return True
 
         temp_occupied = deepcopy(occupied)
-
+        temp_loc = piece.loc.copy()
+        
         temp_occupied[coords[1]][coords[0]] = turn
         temp_occupied[piece.loc[0]][piece.loc[1]] = 0
         piece.loc = [coords[1], coords[0]]
