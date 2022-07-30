@@ -1,3 +1,5 @@
+# Note: MUST DEBUG - added allowing a move based on if king is incheck 
+
 from chess_frontend import *
 from chess_setup import *
 from chess_backend import *
@@ -44,20 +46,19 @@ def main():
                     if piece.name[0] != turn_id[turn]:
                         continue 
                     temp_piece = piece
-                    piece.moves = find_moves(piece, brq_squares(piece))
+                    piece.moves = find_moves(piece, brq_squares(piece, occupied), occupied)
 
                 else:    # var piece behaves as coords list        
-                    if temp_piece is not None and can_move(temp_piece, piece):
+                    if temp_piece is not None and can_move(temp_piece, piece, check):
                                         # x, y
                         move(temp_piece, piece, turn)   
                         update_occupied(occupied)
 
                         for p in Piece.pieces:
-                            p.moves = find_moves(p, brq_squares(p))
+                            p.moves = find_moves(p, brq_squares(p, occupied), occupied)
                         
-                        for p in p1.pieces:
-                            print(p.name[1], ': ', p.moves[-1])
-                        print(' --- --- --- --- ---')
+                        check[1] = any(p.moves[-1] for p in p1.pieces)
+                        check[0] = any(p.moves[-1] for p in p2.pieces)
 
                         turn *= -1
                         temp_piece = None
