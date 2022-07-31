@@ -1,4 +1,4 @@
-# Note: MUST DEBUG - added allowing a move based on if king is incheck 
+# Note: must complete checkmate and stalemate
 
 from chess_frontend import *
 from chess_setup import *
@@ -32,6 +32,8 @@ def main():
 
     clock = pygame.time.Clock()
     run = True
+    for p in Piece.pieces:
+        p.moves = find_moves(p, brq_squares(p, occupied), occupied)
     while run:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -63,8 +65,7 @@ def main():
                         turn *= -1
                         temp_piece = None
                          
-                        # for row in occupied:
-                        #     print(row)
+                        
                         
         draw_window(temp_piece)
         

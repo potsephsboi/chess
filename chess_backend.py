@@ -326,7 +326,7 @@ def find_checking_piece(turn):
 def avoid_check(piece, turn, coords, in_check):
     from chess_setup import occupied, p1, p2
     
-    if turn == 1 and in_check[0]:
+    if turn == 1:
         cp = find_checking_piece(turn)
         if cp is not None and cp.loc == [coords[1], coords[0]]:
             return True
@@ -348,7 +348,7 @@ def avoid_check(piece, turn, coords, in_check):
             piece.loc = temp_loc
             return True
 
-    if turn == -1 and in_check[1]: 
+    if turn == -1: 
         cp = find_checking_piece(turn)
         if cp is not None and cp.loc == [coords[1], coords[0]]:
             return True
