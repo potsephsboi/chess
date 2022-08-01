@@ -111,8 +111,11 @@ def find_moves(piece, brq, occupied):     # bishop rook queen
         return brq
     
     elif piece.name[1] == 'K':    
-        can_castle = check_castling_rights(piece)                                               # check opposite colour king (illegal)     
-        return [1 if brq[i] != 0 else brq[i] for i in range(8)] + [can_castle[0], can_castle[1], False]
+        can_castle = check_castling_rights(piece)                                                    
+        return [1 if brq[i] != 0 else brq[i] for i in range(8)] + [can_castle[0], can_castle[1], 
+        True if math.sqrt((King.kings[0].loc[0] - King.kings[1].loc[0])**2 + (King.kings[0].loc[1] - King.kings[1].loc[1])**2) in {1, math.sqrt(2)} 
+        else False
+        ]
                                                                     # ^short        ^long
     elif piece.name[1] == 'N':
         return knight_squares(piece) # -> int list: [2u_1l, 2u_1r, 1u_2l, 1u_2r, 2d_1l, 2d_1r, 1d_2l, 1d_2r]  
