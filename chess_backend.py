@@ -41,15 +41,13 @@ def find_moves(piece, brq, occupied):     # bishop rook queen
         if is_black(piece):
             if piece.has_moved:
                 down_left = (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 or
-                
                 (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]-1] else False)
-
                 else 0) if piece.loc[1] > 0 and piece.loc[0] < 7 else 0
+                
                 down_right = (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 or
-                
                 (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]+1] else False)
-                
                 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
+
                 piece.legal_moves += 1 if down_left else 0
                 piece.legal_moves += 1 if down_right else 0
 
@@ -57,43 +55,40 @@ def find_moves(piece, brq, occupied):     # bishop rook queen
                 
             else:
                 down_left = (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0) if piece.loc[1] > 0 and piece.loc[0] < 7 else 0
+                
                 down_right = (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
+                
                 piece.legal_moves += 1 if down_left else 0
                 piece.legal_moves += 1 if down_right else 0
-                
+
                 return [0, 2 if brq[1] >= 2 else brq[1], 0, 0, 0, 0, down_left, down_right, check]
 
                  
         else:
             if piece.has_moved:
-                return [1 if brq[0] >= 1 else 0, 0, 0, 0,
-                # left enpassan
-                (1 if (occupied[piece.loc[0]-1][piece.loc[1]-1] == -1) or
-                
+                up_left = (1 if (occupied[piece.loc[0]-1][piece.loc[1]-1] == -1) or           
                 (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]-1] else False)
+                else 0) if piece.loc[1] > 0 and piece.loc[0] < 7 else 0
 
-                else 0)
-                
-                if piece.loc[1] > 0 and piece.loc[0] < 7 else 0,
 
-                # right enpassan
-                (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 or
-                
-                (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]+1] else False)
-                
-                else 0)
-                
-                if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
-                
-                ,0, 0, check
-                ]
+                up_right = (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 or    
+                (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]+1] else False)   
+                else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
+                                
+                piece.legal_moves += 1 if up_left else 0
+                piece.legal_moves += 1 if up_right else 0
+
+                return [1 if brq[0] >= 1 else 0, 0, 0, 0, up_left, up_right ,0, 0, check]
 
             else:
-                return [2 if brq[0] >= 2 else brq[0], 0, 0, 0,
-                (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 else 0) if piece.loc[1] > 0 and piece.loc[0] > 0 else 0,
-                (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 else 0) if piece.loc[1] < 7 and piece.loc[0] > 0 else 0,
-                0, 0, check
-                ]
+                up_left = (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 else 0) if piece.loc[1] > 0 and piece.loc[0] > 0 else 0
+
+                up_right = (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 else 0) if piece.loc[1] < 7 and piece.loc[0] > 0 else 0
+                
+                piece.legal_moves += 1 if up_left else 0
+                piece.legal_moves += 1 if up_right else 0
+                
+                return [2 if brq[0] >= 2 else brq[0], 0, 0, 0, up_left, up_right, 0, 0, check]
 
     elif piece.name[1] == 'R' or piece.name[1] == 'B' or piece.name[1] == 'Q':
         return brq
