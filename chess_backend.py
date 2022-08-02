@@ -202,53 +202,55 @@ def brq_squares(piece, occupied, run_av_check):
 
     pos = [piece.loc[1], piece.loc[0]]
     check = False
-    
     # pos[0] == x, pos[1] == y
     def up(pos, n):
         global check
         check = detect_check(piece, [pos[0], pos[1]-1]) if detect_check(piece, [pos[0], pos[1]-1]) is not None and piece.name[1] in {'R', 'Q'}  else check
-        
-        
+
         if pos[1]-1 < 0 or occupied[pos[1]-1][pos[0]] == name_id[piece.name[0]]:
             return n
         if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
             return n       
-        if occupied[pos[1]-1][pos[0]]*(-1) == name_id[piece.name[0]]:
-            if piece.name[1] != 'P':
-                return n+1
-            else:
-                return n
+        
 
         n += 1
         if run_av_check and avoid_check(piece, name_id[piece.name[0]], pos):
-            piece.legal_moves += 1
-        if n == 1 and (piece.name[1] == 'K' or (piece.name == 'WP' and piece.has_moved)): 
+            piece.legal_moves += 1 if piece.name != 'BP' and not (piece.name == 'WP' and occupied[pos[1]-1][pos[0]] == -1) else 0
+        
+        if run_av_check and n == 1 and (piece.name[1] == 'K' or (piece.name == 'WP' and piece.has_moved)): 
             return n
-        if n == 2 and piece.name == 'WP' and not piece.has_moved:
+        if run_av_check and n == 2 and piece.name == 'WP' and not piece.has_moved:
             return n
+        if occupied[pos[1]-1][pos[0]]*(-1) == name_id[piece.name[0]]:
+            if piece.name[1] != 'P':
+                return n
+            else:
+                return n-1
+
         return up([pos[0], pos[1]-1], n)
         
             
     def down(pos, n):
         global check
         check = detect_check(piece, [pos[0], pos[1]+1]) if detect_check(piece, [pos[0], pos[1]+1]) is not None and piece.name[1] in {'R', 'Q'}  else check
-        if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
-            return n
         if pos[1]+1 > 7 or occupied[pos[1]+1][pos[0]] == name_id[piece.name[0]]:
             return n
-        if occupied[pos[1]+1][pos[0]]*(-1) == name_id[piece.name[0]]:
-            if piece.name[1] != 'P':
-                return n+1
-            else:
-                return n
+        if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
+            return n
 
         n += 1
         if run_av_check and avoid_check(piece, name_id[piece.name[0]], pos):
-           piece.legal_moves += 1 
-        if n == 1 and (piece.name[1] == 'K' or (piece.name == 'BP' and piece.has_moved)): 
+           piece.legal_moves += 1 if piece.name != 'WP' and not (piece.name == 'BP' and occupied[pos[1]+1][pos[0]] == 1) else 0
+        if run_av_check and n == 1 and (piece.name[1] == 'K' or (piece.name == 'BP' and piece.has_moved)): 
             return n
-        if n == 2 and piece.name == 'BP' and not piece.has_moved:
+        if run_av_check and n == 2 and piece.name == 'BP' and not piece.has_moved:
             return n
+        if occupied[pos[1]+1][pos[0]]*(-1) == name_id[piece.name[0]]:
+            if piece.name[1] != 'P':
+                return n
+            else:
+                return n-1
+
         return down([pos[0], pos[1]+1], n)
 
     def left(pos, n):
