@@ -1,5 +1,3 @@
-from lib2to3.pytree import Base
-import re
 import pygame
 import math
 from copy import deepcopy
@@ -35,8 +33,6 @@ def select_piece(mouse, turn):
 
 
 def find_moves(piece, brq, occupied):     # bishop rook queen
-
-    
     if piece.name[1] == 'P':
         check = False
         for i in range(2):
@@ -72,7 +68,6 @@ def find_moves(piece, brq, occupied):     # bishop rook queen
                  if piece.loc[1] > 0 and piece.loc[0] < 7 else 0,
                 (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0,
                 check
-                # check if opposite colour king is in diagonal squares
                 ]
 
                  
@@ -190,21 +185,34 @@ def detect_check(piece, pos):
         if piece.name[0] != king.name[0] and king.loc == [pos[1], pos[0]]:
             return True
     
+def find_checking_piece(turn):
+    from chess_setup import p1, p2
+    
+    if turn == 1:
+        for p in p2.pieces:
+            if p.moves[-1]:
+                return p
+    if turn == -1:
+        for p in p1.pieces:
+            if p.moves[-1]:
+                return  p
 
-def brq_squares(piece, occupied):
+def brq_squares(piece, occupied, run_av_check):
     global check
 
     pos = [piece.loc[1], piece.loc[0]]
     check = False
-
+    
     # pos[0] == x, pos[1] == y
     def up(pos, n):
         global check
         check = detect_check(piece, [pos[0], pos[1]-1]) if detect_check(piece, [pos[0], pos[1]-1]) is not None and piece.name[1] in {'R', 'Q'}  else check
-        if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
-            return n
+        
+        
         if pos[1]-1 < 0 or occupied[pos[1]-1][pos[0]] == name_id[piece.name[0]]:
             return n
+        if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
+            return n       
         if occupied[pos[1]-1][pos[0]]*(-1) == name_id[piece.name[0]]:
             if piece.name[1] != 'P':
                 return n+1
@@ -212,6 +220,12 @@ def brq_squares(piece, occupied):
                 return n
 
         n += 1
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], pos):
+            piece.legal_moves += 1
+        if n == 1 and (piece.name[1] == 'K' or (piece.name == 'WP' and piece.has_moved)): 
+            return n
+        if n == 2 and piece.name == 'WP' and not piece.has_moved:
+            return n
         return up([pos[0], pos[1]-1], n)
         
             
@@ -229,6 +243,12 @@ def brq_squares(piece, occupied):
                 return n
 
         n += 1
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], pos):
+           piece.legal_moves += 1 
+        if n == 1 and (piece.name[1] == 'K' or (piece.name == 'BP' and piece.has_moved)): 
+            return n
+        if n == 2 and piece.name == 'BP' and not piece.has_moved:
+            return n
         return down([pos[0], pos[1]+1], n)
 
     def left(pos, n):
@@ -313,20 +333,7 @@ def brq_squares(piece, occupied):
     return [up(pos, 0), down(pos, 0), left(pos, 0), right(pos, 0), 
             upleft(pos, 0), upright(pos, 0), downleft(pos, 0), downright(pos, 0), check]
 
-def find_checking_piece(turn):
-    from chess_setup import p1, p2
-    
-    if turn == 1:
-        for p in p2.pieces:
-            if p.moves[-1]:
-                return p
-    if turn == -1:
-        for p in p1.pieces:
-            if p.moves[-1]:
-                return  p
-
-
-def avoid_check(piece, turn, coords, in_check):
+def avoid_check(piece, turn, coords):
     from chess_setup import occupied, p1, p2
     
     if turn == 1:
@@ -342,7 +349,7 @@ def avoid_check(piece, turn, coords, in_check):
         piece.loc = [coords[1], coords[0]]
 
         for p in Piece.pieces:
-            p.moves = find_moves(p, brq_squares(p, temp_occupied), temp_occupied)
+            p.moves = find_moves(p, brq_squares(p, temp_occupied, False), temp_occupied)
                             
         if any(p.moves[-1] for p in p2.pieces):   
             piece.loc = temp_loc  
@@ -365,7 +372,7 @@ def avoid_check(piece, turn, coords, in_check):
         
         
         for p in Piece.pieces:
-            p.moves = find_moves(p, brq_squares(p, temp_occupied), temp_occupied)
+            p.moves = find_moves(p, brq_squares(p, temp_occupied, False), temp_occupied)
 
         if any(p.moves[-1] for p in p1.pieces):
             piece.loc = temp_loc
@@ -377,7 +384,7 @@ def avoid_check(piece, turn, coords, in_check):
         return True
     
 
-def can_move(piece, coords, in_check):
+def can_move(piece, coords):
     from chess_setup import occupied
 
     x, y = piece.loc[1], piece.loc[0]
@@ -385,14 +392,14 @@ def can_move(piece, coords, in_check):
     dy = coords[1] - y
     dist = math.sqrt(dx**2+dy**2)
                                                       # x, y
-    if not avoid_check(piece, name_id[piece.name[0]], coords, in_check):
+    if not avoid_check(piece, name_id[piece.name[0]], coords):
         for p in Piece.pieces:
-            p.moves = find_moves(p, brq_squares(p, occupied), occupied)
+            p.moves = find_moves(p, brq_squares(p, occupied, False), occupied)
         return False
 
 
     for p in Piece.pieces:
-        p.moves = find_moves(p, brq_squares(p, occupied), occupied)  
+        p.moves = find_moves(p, brq_squares(p, occupied, False), occupied)  
         
     # piece is knight
     if dist == math.sqrt(5) and piece.name[1] == 'N':    

@@ -15,10 +15,11 @@ class Piece:
         self.value = value 
         self.loc = loc
         self.image = image
+        self.legal_moves = 0
         self.moves = []
         Piece.pieces.append(self)
     def __repr__(self):
-        return f'Piece name: {self.name} -- Piece loc: {self.loc}'
+        return f' -Piece name: {self.name} \n -Piece loc: {self.loc} \n -Piece moves: {self.moves}'
 
 class Pawn(Piece):
     enpassan = None

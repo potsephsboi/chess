@@ -1,4 +1,7 @@
-# Note: must complete checkmate and stalemate
+# Note: must complete checkmate and stalemate 
+#       + fix illegal castling when iin check
+ 
+
 
 from chess_frontend import *
 from chess_setup import *
@@ -33,7 +36,7 @@ def main():
     clock = pygame.time.Clock()
     run = True
     for p in Piece.pieces:
-        p.moves = find_moves(p, brq_squares(p, occupied), occupied)
+        p.moves = find_moves(p, brq_squares(p, occupied, False), occupied)
     while run:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -48,16 +51,17 @@ def main():
                     if piece.name[0] != turn_id[turn]:
                         continue 
                     temp_piece = piece
-                    piece.moves = find_moves(piece, brq_squares(piece, occupied), occupied)
-
+                    piece.legal_moves = 0
+                    piece.moves = find_moves(piece, brq_squares(piece, occupied, True), occupied)
+                    print(piece.legal_moves)
                 else:    # var piece behaves as coords list        
-                    if temp_piece is not None and can_move(temp_piece, piece, check):
+                    if temp_piece is not None and can_move(temp_piece, piece):
                                         # x, y
                         move(temp_piece, piece, turn)   
                         update_occupied(occupied)
 
                         for p in Piece.pieces:
-                            p.moves = find_moves(p, brq_squares(p, occupied), occupied)
+                            p.moves = find_moves(p, brq_squares(p, occupied, False), occupied)
                         
                         check[1] = any(p.moves[-1] for p in p1.pieces)
                         check[0] = any(p.moves[-1] for p in p2.pieces)
