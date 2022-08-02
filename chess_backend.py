@@ -40,35 +40,28 @@ def find_moves(piece, brq, occupied):     # bishop rook queen
                 check = True
         if is_black(piece):
             if piece.has_moved:
-                return [0, 1 if brq[1] >= 1 else 0, 0, 0, 0, 0,
-
-                # left enpassan
-                (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 or
+                down_left = (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 or
                 
                 (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]-1] else False)
 
-                else 0)
-                
-                if piece.loc[1] > 0 and piece.loc[0] < 7 else 0,
-
-                # right enpassan
-                (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 or
+                else 0) if piece.loc[1] > 0 and piece.loc[0] < 7 else 0
+                down_right = (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 or
                 
                 (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]+1] else False)
                 
-                else 0)
-                
-                if piece.loc[1] < 7 and piece.loc[0] < 7 else 0,
-                check
-                ]
+                else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
+                piece.legal_moves += 1 if down_left else 0
+                piece.legal_moves += 1 if down_right else 0
+
+                return [0, 1 if brq[1] >= 1 else 0, 0, 0, 0, 0, down_left, down_right, check]
                 
             else:
-                return [0, 2 if brq[1] >= 2 else brq[1], 0, 0, 0, 0,
-                (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0)
-                 if piece.loc[1] > 0 and piece.loc[0] < 7 else 0,
-                (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0,
-                check
-                ]
+                down_left = (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0) if piece.loc[1] > 0 and piece.loc[0] < 7 else 0
+                down_right = (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
+                piece.legal_moves += 1 if down_left else 0
+                piece.legal_moves += 1 if down_right else 0
+                
+                return [0, 2 if brq[1] >= 2 else brq[1], 0, 0, 0, 0, down_left, down_right, check]
 
                  
         else:
@@ -291,14 +284,18 @@ def brq_squares(piece, occupied, run_av_check):
     def upleft(pos, n):
         global check
         check = detect_check(piece, [pos[0]-1, pos[1]-1]) if detect_check(piece, [pos[0]-1, pos[1]-1]) is not None and piece.name[1] in {'B', 'Q'}  else check
-        if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
-            return n
         if (pos[1]-1 < 0 or pos[0]-1 < 0) or occupied[pos[1]-1][pos[0]-1] == name_id[piece.name[0]]:
             return n
-        if occupied[pos[1]-1][pos[0]-1]*(-1) == name_id[piece.name[0]]:
-            return n+1
+        if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
+            return n
+
 
         n += 1
+
+
+        if occupied[pos[1]-1][pos[0]-1]*(-1) == name_id[piece.name[0]]:
+            return n
+
         return upleft([pos[0]-1, pos[1]-1], n)
     
     def upright(pos, n):
