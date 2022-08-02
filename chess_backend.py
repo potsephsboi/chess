@@ -273,14 +273,19 @@ def brq_squares(piece, occupied, run_av_check):
     def right(pos, n):
         global check
         check = detect_check(piece, [pos[0]+1, pos[1]]) if detect_check(piece, [pos[0]+1, pos[1]]) is not None and piece.name[1] in {'R', 'Q'}  else check
-        if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
-            return n
         if pos[0]+1 > 7 or occupied[pos[1]][pos[0]+1] == name_id[piece.name[0]]:
             return n
-        if occupied[pos[1]][pos[0]+1]*(-1) == name_id[piece.name[0]]:
-            return n+1
+        if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
+            return n
 
         n += 1
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]+1, pos[1]]) and piece.name[1] != 'P':
+            piece.legal_moves += 1
+        if run_av_check and n == 1 and piece.name[1] == 'K': 
+            return n
+        if occupied[pos[1]][pos[0]+1]*(-1) == name_id[piece.name[0]]:
+            return n
+            
         return right([pos[0]+1, pos[1]], n)
 
     def upleft(pos, n):
