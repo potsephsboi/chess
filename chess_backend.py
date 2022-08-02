@@ -218,7 +218,7 @@ def brq_squares(piece, occupied, run_av_check):
         
 
         n += 1
-        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0], pos[1]-1]):
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0], pos[1]-1]) and piece.name[1] != 'B':
             piece.legal_moves += 1 if piece.name != 'BP' and not (piece.name == 'WP' and occupied[pos[1]-1][pos[0]] == -1) else 0
         if run_av_check and n == 1 and (piece.name[1] == 'K' or (piece.name == 'WP' and piece.has_moved)): 
             return n
@@ -242,7 +242,7 @@ def brq_squares(piece, occupied, run_av_check):
             return n
 
         n += 1
-        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0], pos[1]+1]):
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0], pos[1]+1]) and piece.name[1] != 'B':
             piece.legal_moves += 1 if piece.name != 'WP' and not (piece.name == 'BP' and occupied[pos[1]+1][pos[0]] == 1) else 0
         if run_av_check and n == 1 and (piece.name[1] == 'K' or (piece.name == 'BP' and piece.has_moved)): 
             return n
@@ -265,7 +265,7 @@ def brq_squares(piece, occupied, run_av_check):
             return n
         
         n += 1
-        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]-1, pos[1]]) and piece.name[1] != 'P':
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]-1, pos[1]]) and piece.name[1] not in {'P', 'B'}:
             piece.legal_moves += 1
         if run_av_check and n == 1 and piece.name[1] == 'K': 
             return n
@@ -283,7 +283,7 @@ def brq_squares(piece, occupied, run_av_check):
             return n
 
         n += 1
-        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]+1, pos[1]]) and piece.name[1] != 'P':
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]+1, pos[1]]) and piece.name[1] not in {'P', 'B'}:
             piece.legal_moves += 1
         if run_av_check and n == 1 and piece.name[1] == 'K': 
             return n
@@ -302,7 +302,7 @@ def brq_squares(piece, occupied, run_av_check):
 
 
         n += 1
-        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]-1, pos[1]-1]) and piece.name[1] != 'P':
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]-1, pos[1]-1]) and piece.name[1] not in {'P', 'R'}:
             piece.legal_moves += 1
         if run_av_check and n == 1 and piece.name[1] == 'K': 
             return n
@@ -320,7 +320,7 @@ def brq_squares(piece, occupied, run_av_check):
             return n
 
         n += 1
-        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]+1, pos[1]-1]) and piece.name[1] != 'P':
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]+1, pos[1]-1]) and piece.name[1] not in {'P', 'R'}:
             piece.legal_moves += 1
         if run_av_check and n == 1 and piece.name[1] == 'K': 
             return n
@@ -338,7 +338,7 @@ def brq_squares(piece, occupied, run_av_check):
             return n
         
         n += 1
-        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]-1, pos[1]+1]) and piece.name[1] != 'P':
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]-1, pos[1]+1]) and piece.name[1] not in {'P', 'R'}:
             piece.legal_moves += 1
         if run_av_check and n == 1 and piece.name[1] == 'K': 
             return n
@@ -356,7 +356,7 @@ def brq_squares(piece, occupied, run_av_check):
             return n
                     
         n += 1
-        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]+1, pos[1]+1]) and piece.name[1] != 'P':
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]+1, pos[1]+1]) and piece.name[1] not in {'P', 'R'}:
             piece.legal_moves += 1
         if run_av_check and n == 1 and piece.name[1] == 'K': 
             return n
