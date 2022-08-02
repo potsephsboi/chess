@@ -32,7 +32,7 @@ def select_piece(mouse, turn):
     return list(map(lambda x: x // 80, list(mouse)))
 
 
-def find_moves(piece, brq, occupied, incr_legal_pawn_moves):     # bishop rook queen
+def find_moves(piece, brq, occupied, incr_legal_moves):     # bishop rook queen
     if piece.name[1] == 'P':
         check = False
         for i in range(2):
@@ -47,7 +47,7 @@ def find_moves(piece, brq, occupied, incr_legal_pawn_moves):     # bishop rook q
                 down_right = (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 or
                 (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]+1] else False)
                 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
-                if incr_legal_pawn_moves:
+                if incr_legal_moves:
                     piece.legal_moves += down_left 
                     piece.legal_moves += down_right 
 
@@ -57,7 +57,7 @@ def find_moves(piece, brq, occupied, incr_legal_pawn_moves):     # bishop rook q
                 down_left = (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0) if piece.loc[1] > 0 and piece.loc[0] < 7 else 0
                 
                 down_right = (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
-                if incr_legal_pawn_moves:
+                if incr_legal_moves:
                     piece.legal_moves += down_left
                     piece.legal_moves += down_right
 
@@ -74,7 +74,7 @@ def find_moves(piece, brq, occupied, incr_legal_pawn_moves):     # bishop rook q
                 up_right = (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 or    
                 (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]+1] else False)   
                 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
-                if incr_legal_pawn_moves:
+                if incr_legal_moves:
                     piece.legal_moves += up_left
                     piece.legal_moves += up_right
                 
@@ -84,7 +84,7 @@ def find_moves(piece, brq, occupied, incr_legal_pawn_moves):     # bishop rook q
                 up_left = (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 else 0) if piece.loc[1] > 0 and piece.loc[0] > 0 else 0
 
                 up_right = (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 else 0) if piece.loc[1] < 7 and piece.loc[0] > 0 else 0
-                if incr_legal_pawn_moves:
+                if incr_legal_moves:
                     piece.legal_moves += up_left
                     piece.legal_moves += up_right
 
@@ -101,61 +101,77 @@ def find_moves(piece, brq, occupied, incr_legal_pawn_moves):     # bishop rook q
         ]
                                                                     # ^short        ^long
     elif piece.name[1] == 'N':
-        return knight_squares(piece) # -> int list: [2u_1l, 2u_1r, 1u_2l, 1u_2r, 2d_1l, 2d_1r, 1d_2l, 1d_2r]  
+        return knight_squares(piece, incr_legal_moves) # -> int list: [2u_1l, 2u_1r, 1u_2l, 1u_2r, 2d_1l, 2d_1r, 1d_2l, 1d_2r]  
 
 
-def knight_squares(piece):
+def knight_squares(piece, incr_legal_moves):
     from chess_setup import occupied
+    
 
     x = piece.loc[1]
     y = piece.loc[0]
     moves = []
-
     # 2u_1l
     if (y-2 >= 0 and x-1 >= 0) and occupied[y-2][x-1] != name_id[piece.name[0]]:
         moves.append(1)
+        if incr_legal_moves and avoid_check(piece, name_id[piece.name[0]], [piece.loc[1]-1, piece.loc[0]-2]):
+            piece.legal_moves += 1
     else:
         moves.append(0)
     
     # 2u_1r
     if (y-2 >= 0 and x+1 < 8) and occupied[y-2][x+1] != name_id[piece.name[0]]:
         moves.append(1)
+        if incr_legal_moves and avoid_check(piece, name_id[piece.name[0]], [piece.loc[1]+1, piece.loc[0]-2]):
+            piece.legal_moves += 1
     else:
         moves.append(0)
 
     # 1u_2l
     if (y-1 >= 0 and x-2 >= 0) and occupied[y-1][x-2] != name_id[piece.name[0]]:
         moves.append(1)
+        if incr_legal_moves and avoid_check(piece, name_id[piece.name[0]], [piece.loc[1]-2, piece.loc[0]-1]):
+            piece.legal_moves += 1
     else:
         moves.append(0)
 
     # 1u_2r
     if (y-1 >= 0 and x+2 < 8) and occupied[y-1][x+2] != name_id[piece.name[0]]:
         moves.append(1)
+        if incr_legal_moves and avoid_check(piece, name_id[piece.name[0]], [piece.loc[1]+2, piece.loc[0]-1]):
+            piece.legal_moves += 1
     else:
         moves.append(0)
 
     # 2d_1l
     if (y+2 < 8 and x-1 >= 0) and occupied[y+2][x-1] != name_id[piece.name[0]]:
         moves.append(1)
+        if incr_legal_moves and avoid_check(piece, name_id[piece.name[0]], [piece.loc[1]-1, piece.loc[0]+2]):
+            piece.legal_moves += 1
     else:
         moves.append(0)
 
     # 2d_1r
     if (y+2 < 8 and x+1 < 8) and occupied[y+2][x+1] != name_id[piece.name[0]]:
         moves.append(1)
+        if incr_legal_moves and avoid_check(piece, name_id[piece.name[0]], [piece.loc[1]+1, piece.loc[0]+2]):
+            piece.legal_moves += 1
     else:
         moves.append(0)
 
     # 1d_2l
     if (y+1 < 8 and x-2 >= 0) and occupied[y+1][x-2] != name_id[piece.name[0]]:
         moves.append(1)
+        if incr_legal_moves and avoid_check(piece, name_id[piece.name[0]], [piece.loc[1]-2, piece.loc[0]+1]):
+            piece.legal_moves += 1
     else:
         moves.append(0)
 
     # 1d_2r
     if (y+1 < 8 and x+2 < 8) and occupied[y+1][x+2] != name_id[piece.name[0]]:
         moves.append(1)
+        if incr_legal_moves and avoid_check(piece, name_id[piece.name[0]], [piece.loc[1]+2, piece.loc[0]+1]):
+            piece.legal_moves += 1
     else:
         moves.append(0)
 
@@ -349,10 +365,11 @@ def brq_squares(piece, occupied, run_av_check):
 
         return downright([pos[0]+1, pos[1]+1], n)
 
-
-    return [up(pos, 0), down(pos, 0), left(pos, 0), right(pos, 0), 
+    if piece.name[1] != 'N':
+        return [up(pos, 0), down(pos, 0), left(pos, 0), right(pos, 0), 
             upleft(pos, 0), upright(pos, 0), downleft(pos, 0), downright(pos, 0), check]
 
+                            # x, y
 def avoid_check(piece, turn, coords):
     from chess_setup import occupied, p1, p2
     
