@@ -36,7 +36,7 @@ def main():
     clock = pygame.time.Clock()
     run = True
     for p in Piece.pieces:
-        p.moves = find_moves(p, brq_squares(p, occupied, False), occupied)
+        p.moves = find_moves(p, brq_squares(p, occupied, False), occupied, False)
     while run:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -52,7 +52,7 @@ def main():
                         continue 
                     temp_piece = piece
                     piece.legal_moves = 0
-                    piece.moves = find_moves(piece, brq_squares(piece, occupied, True), occupied)
+                    piece.moves = find_moves(piece, brq_squares(piece, occupied, True), occupied, True)
                     print(piece.legal_moves)
                 else:    # var piece behaves as coords list        
                     if temp_piece is not None and can_move(temp_piece, piece):
@@ -61,7 +61,7 @@ def main():
                         update_occupied(occupied)
 
                         for p in Piece.pieces:
-                            p.moves = find_moves(p, brq_squares(p, occupied, False), occupied)
+                            p.moves = find_moves(p, brq_squares(p, occupied, False), occupied, False)
                         
                         check[1] = any(p.moves[-1] for p in p1.pieces)
                         check[0] = any(p.moves[-1] for p in p2.pieces)

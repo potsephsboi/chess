@@ -32,7 +32,7 @@ def select_piece(mouse, turn):
     return list(map(lambda x: x // 80, list(mouse)))
 
 
-def find_moves(piece, brq, occupied):     # bishop rook queen
+def find_moves(piece, brq, occupied, incr_legal_pawn_moves):     # bishop rook queen
     if piece.name[1] == 'P':
         check = False
         for i in range(2):
@@ -47,9 +47,9 @@ def find_moves(piece, brq, occupied):     # bishop rook queen
                 down_right = (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 or
                 (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]+1] else False)
                 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
-
-                piece.legal_moves += 1 if down_left else 0
-                piece.legal_moves += 1 if down_right else 0
+                if incr_legal_pawn_moves:
+                    piece.legal_moves += down_left 
+                    piece.legal_moves += down_right 
 
                 return [0, 1 if brq[1] >= 1 else 0, 0, 0, 0, 0, down_left, down_right, check]
                 
@@ -57,9 +57,9 @@ def find_moves(piece, brq, occupied):     # bishop rook queen
                 down_left = (1 if occupied[piece.loc[0]+1][piece.loc[1]-1] == 1 else 0) if piece.loc[1] > 0 and piece.loc[0] < 7 else 0
                 
                 down_right = (1 if occupied[piece.loc[0]+1][piece.loc[1]+1] == 1 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
-                
-                piece.legal_moves += 1 if down_left else 0
-                piece.legal_moves += 1 if down_right else 0
+                if incr_legal_pawn_moves:
+                    piece.legal_moves += down_left
+                    piece.legal_moves += down_right
 
                 return [0, 2 if brq[1] >= 2 else brq[1], 0, 0, 0, 0, down_left, down_right, check]
 
@@ -74,20 +74,20 @@ def find_moves(piece, brq, occupied):     # bishop rook queen
                 up_right = (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 or    
                 (True if Pawn.enpassan is not None and Pawn.enpassan.loc == [piece.loc[0], piece.loc[1]+1] else False)   
                 else 0) if piece.loc[1] < 7 and piece.loc[0] < 7 else 0
-                                
-                piece.legal_moves += 1 if up_left else 0
-                piece.legal_moves += 1 if up_right else 0
-
+                if incr_legal_pawn_moves:
+                    piece.legal_moves += up_left
+                    piece.legal_moves += up_right
+                
                 return [1 if brq[0] >= 1 else 0, 0, 0, 0, up_left, up_right ,0, 0, check]
 
             else:
                 up_left = (1 if occupied[piece.loc[0]-1][piece.loc[1]-1] == -1 else 0) if piece.loc[1] > 0 and piece.loc[0] > 0 else 0
 
                 up_right = (1 if occupied[piece.loc[0]-1][piece.loc[1]+1] == -1 else 0) if piece.loc[1] < 7 and piece.loc[0] > 0 else 0
-                
-                piece.legal_moves += 1 if up_left else 0
-                piece.legal_moves += 1 if up_right else 0
-                
+                if incr_legal_pawn_moves:
+                    piece.legal_moves += up_left
+                    piece.legal_moves += up_right
+
                 return [2 if brq[0] >= 2 else brq[0], 0, 0, 0, up_left, up_right, 0, 0, check]
 
     elif piece.name[1] == 'R' or piece.name[1] == 'B' or piece.name[1] == 'Q':
@@ -286,8 +286,10 @@ def brq_squares(piece, occupied, run_av_check):
 
 
         n += 1
-
-
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]-1, pos[1]-1]) and piece.name[1] != 'P':
+            piece.legal_moves += 1
+        if run_av_check and n == 1 and piece.name[1] == 'K': 
+            return n
         if occupied[pos[1]-1][pos[0]-1]*(-1) == name_id[piece.name[0]]:
             return n
 
@@ -296,40 +298,55 @@ def brq_squares(piece, occupied, run_av_check):
     def upright(pos, n):
         global check
         check = detect_check(piece, [pos[0]+1, pos[1]-1]) if detect_check(piece, [pos[0]+1, pos[1]-1]) is not None and piece.name[1] in {'B', 'Q'}  else check
-        if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
-            return n
         if (pos[1]-1 < 0 or pos[0]+1 > 7) or occupied[pos[1]-1][pos[0]+1] == name_id[piece.name[0]]:
             return n
-        if occupied[pos[1]-1][pos[0]+1]*(-1) == name_id[piece.name[0]]:
-            return n+1
+        if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
+            return n
 
         n += 1
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]+1, pos[1]-1]) and piece.name[1] != 'P':
+            piece.legal_moves += 1
+        if run_av_check and n == 1 and piece.name[1] == 'K': 
+            return n
+        if occupied[pos[1]-1][pos[0]+1]*(-1) == name_id[piece.name[0]]:
+            return n
+
         return upright([pos[0]+1, pos[1]-1], n)
 
     def downleft(pos, n):
         global check
         check = detect_check(piece, [pos[0]-1, pos[1]+1]) if detect_check(piece, [pos[0]-1, pos[1]+1]) is not None and piece.name[1] in {'B', 'Q'}  else check
-        if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
-            return n
         if (pos[0]-1 < 0 or pos[1]+1 > 7) or occupied[pos[1]+1][pos[0]-1] == name_id[piece.name[0]]:
             return n
-        if occupied[pos[1]+1][pos[0]-1]*(-1) == name_id[piece.name[0]]:
-            return n+1
-
+        if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
+            return n
+        
         n += 1
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]-1, pos[1]+1]) and piece.name[1] != 'P':
+            piece.legal_moves += 1
+        if run_av_check and n == 1 and piece.name[1] == 'K': 
+            return n
+        if occupied[pos[1]+1][pos[0]-1]*(-1) == name_id[piece.name[0]]:
+            return n
+
         return downleft([pos[0]-1, pos[1]+1], n)
 
     def downright(pos, n):
         global check
         check = detect_check(piece, [pos[0]+1, pos[1]+1]) if detect_check(piece, [pos[0]+1, pos[1]+1]) is not None and piece.name[1] in {'B', 'Q'}  else check
-        if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
-            return n
         if (pos[0]+1 > 7 or pos[1]+1 > 7) or occupied[pos[1]+1][pos[0]+1] == name_id[piece.name[0]]:
             return n
-        if occupied[pos[1]+1][pos[0]+1]*(-1) == name_id[piece.name[0]]:
-            return n+1
-            
+        if occupied[pos[1]][pos[0]] == name_id[piece.name[0]] * -1:
+            return n
+                    
         n += 1
+        if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0]+1, pos[1]+1]) and piece.name[1] != 'P':
+            piece.legal_moves += 1
+        if run_av_check and n == 1 and piece.name[1] == 'K': 
+            return n
+        if occupied[pos[1]+1][pos[0]+1]*(-1) == name_id[piece.name[0]]:
+            return n
+
         return downright([pos[0]+1, pos[1]+1], n)
 
 
@@ -352,7 +369,7 @@ def avoid_check(piece, turn, coords):
         piece.loc = [coords[1], coords[0]]
 
         for p in Piece.pieces:
-            p.moves = find_moves(p, brq_squares(p, temp_occupied, False), temp_occupied)
+            p.moves = find_moves(p, brq_squares(p, temp_occupied, False), temp_occupied, False)
                             
         if any(p.moves[-1] for p in p2.pieces):   
             piece.loc = temp_loc  
@@ -375,7 +392,7 @@ def avoid_check(piece, turn, coords):
         
         
         for p in Piece.pieces:
-            p.moves = find_moves(p, brq_squares(p, temp_occupied, False), temp_occupied)
+            p.moves = find_moves(p, brq_squares(p, temp_occupied, False), temp_occupied, False)
 
         if any(p.moves[-1] for p in p1.pieces):
             piece.loc = temp_loc
@@ -397,12 +414,12 @@ def can_move(piece, coords):
                                                       # x, y
     if not avoid_check(piece, name_id[piece.name[0]], coords):
         for p in Piece.pieces:
-            p.moves = find_moves(p, brq_squares(p, occupied, False), occupied)
+            p.moves = find_moves(p, brq_squares(p, occupied, False), occupied, False)
         return False
 
 
     for p in Piece.pieces:
-        p.moves = find_moves(p, brq_squares(p, occupied, False), occupied)  
+        p.moves = find_moves(p, brq_squares(p, occupied, False), occupied, False)  
         
     # piece is knight
     if dist == math.sqrt(5) and piece.name[1] == 'N':    
