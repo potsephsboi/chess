@@ -578,3 +578,42 @@ def make_queen(pawn, turn):
         p2.pieces.append(Piece('BQ', 9, [pawn.loc[0], pawn.loc[1]], pygame.image.load('assets/pieces/black/bqueen.png')))
 
 
+def checkmate(check):
+    from chess_setup import p1, p2
+    # white 
+    if check[0]:
+        for p in p1.pieces:
+            if p.legal_moves != 0:
+                return None
+        return 'B'
+
+    # black
+    if check[1]:
+        for p in p2.pieces:
+            if p.legal_moves != 0:
+                return None
+        return 'W'
+    
+    return None
+
+
+def stalemate(check):
+    from chess_setup import p1, p2
+    # white 
+    if not check[0]:
+        for p in p1.pieces:
+            if p.legal_moves != 0:
+                return False
+
+        return True
+
+    # black
+    if not check[1]:
+        for p in p2.pieces:
+            if p.legal_moves != 0:
+                return False
+
+        return True
+    
+    return False
+    

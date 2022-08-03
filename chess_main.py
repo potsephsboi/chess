@@ -1,6 +1,6 @@
-# Note: must complete checkmate and stalemate 
-#       + fix illegal castling when iin check
- 
+#   fix illegal castling when in check
+#   fix small legal_moves bugs
+
 
 
 from chess_frontend import *
@@ -68,9 +68,19 @@ def main():
 
                         turn *= -1
                         temp_piece = None
-                         
                         
                         
+                        cmate = checkmate(check)
+                        if cmate is not None:
+                            print(f'{cmate} wins')
+                            run = False
+
+                        if stalemate(check):
+                            print('Stalemate')
+                            run = False
+                        
+
+
         draw_window(temp_piece)
         
             

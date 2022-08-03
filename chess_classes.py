@@ -15,7 +15,7 @@ class Piece:
         self.value = value 
         self.loc = loc
         self.image = image
-        self.legal_moves = 0
+        self.legal_moves = -1
         self.moves = []
         Piece.pieces.append(self)
     def __repr__(self):
