@@ -1,5 +1,4 @@
-#   fix illegal castling when in check
-#   fix small legal_moves bugs
+#   fix small legal_moves count bugs
 
 
 
@@ -27,16 +26,17 @@ def draw_window(piece):
     pygame.display.update()
 
 
-def main():
 
+def main():
+    
     turn = 1
     temp_piece = piece = None
-    check = [False, False]
+    kings_check = [False, False]
 
     clock = pygame.time.Clock()
     run = True
     for p in Piece.pieces:
-        p.moves = find_moves(p, brq_squares(p, occupied, False), occupied, False)
+        p.moves = find_moves(p, brq_squares(p, occupied, False, kings_check), occupied, False, kings_check)
     while run:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -52,30 +52,30 @@ def main():
                         continue 
                     temp_piece = piece
                     piece.legal_moves = 0
-                    piece.moves = find_moves(piece, brq_squares(piece, occupied, True), occupied, True)
-                    print(piece.legal_moves)
+                    piece.moves = find_moves(piece, brq_squares(piece, occupied, True, kings_check), occupied, True, kings_check)
+                    # print(piece.legal_moves)
                 else:    # var piece behaves as coords list        
-                    if temp_piece is not None and can_move(temp_piece, piece):
+                    if temp_piece is not None and can_move(temp_piece, piece, kings_check):
                                         # x, y
                         move(temp_piece, piece, turn)   
                         update_occupied(occupied)
 
                         for p in Piece.pieces:
-                            p.moves = find_moves(p, brq_squares(p, occupied, False), occupied, False)
+                            p.moves = find_moves(p, brq_squares(p, occupied, False, kings_check), occupied, False, kings_check)
                         
-                        check[1] = any(p.moves[-1] for p in p1.pieces)
-                        check[0] = any(p.moves[-1] for p in p2.pieces)
+                        kings_check[1] = any(p.moves[-1] for p in p1.pieces)
+                        kings_check[0] = any(p.moves[-1] for p in p2.pieces)
 
                         turn *= -1
                         temp_piece = None
                         
                         
-                        cmate = checkmate(check)
+                        cmate = checkmate(kings_check)
                         if cmate is not None:
                             print(f'{cmate} wins')
                             run = False
 
-                        if stalemate(check):
+                        if stalemate(kings_check):
                             print('Stalemate')
                             run = False
                         
