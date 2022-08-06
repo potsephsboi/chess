@@ -11,6 +11,12 @@ name_id = {
 
 }
 
+turn_id = {
+    1: 'W', 
+    -1: 'B',
+    0: '_'
+}
+
 def is_black(piece):
     return piece.name[0] == 'B'
 
