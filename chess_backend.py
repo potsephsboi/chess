@@ -96,7 +96,6 @@ def find_moves(piece, brq, occupied, incr_legal_moves, kings_check):     # bisho
     
     elif piece.name[1] == 'K':    
         can_castle = check_castling_rights(piece, kings_check)     
-        print(can_castle)                                               
         return [1 if brq[i] != 0 else brq[i] for i in range(8)] + [can_castle[0], can_castle[1], 
         True if math.sqrt((King.kings[0].loc[0] - King.kings[1].loc[0])**2 + (King.kings[0].loc[1] - King.kings[1].loc[1])**2) in {1, math.sqrt(2)} 
         else False
@@ -376,10 +375,6 @@ def avoid_check(piece, turn, coords, kings_check):
     from chess_setup import occupied, p1, p2
     
     if turn == 1:
-        cp = find_checking_piece(turn)
-        if cp is not None and cp.loc == [coords[1], coords[0]]:
-            return True
-
         temp_occupied = deepcopy(occupied)
         temp_loc = piece.loc.copy()
         
@@ -397,10 +392,6 @@ def avoid_check(piece, turn, coords, kings_check):
             return True
 
     if turn == -1: 
-        cp = find_checking_piece(turn)
-        if cp is not None and cp.loc == [coords[1], coords[0]]:
-            return True
-
         temp_occupied = deepcopy(occupied)
         temp_loc = piece.loc.copy()
         
