@@ -183,10 +183,11 @@ def knight_squares(piece, incr_legal_moves, kings_check):
         moves.append(0)
 
     for k in King.kings:
-        if k.name[0] != piece.name[0] and math.sqrt((k.loc[1] - piece.loc[1])**2 + (k.loc[0] - piece.loc[0])**2) == math.sqrt(5):
-            moves.append(True)
-        else:
-            moves.append(False)
+        if k.name[0] != piece.name[0]:
+            if math.sqrt((k.loc[1] - piece.loc[1])**2 + (k.loc[0] - piece.loc[0])**2) == math.sqrt(5):
+                moves.append(True)
+            else:
+                moves.append(False)
 
     return moves
 
@@ -386,7 +387,6 @@ def avoid_check(piece, turn, coords, kings_check):
     
     cp = find_checking_piece(turn)
     if cp is not None and coords == [cp.loc[1], cp.loc[0]] and piece.name[1] != 'K':
-        print(piece)
         return True
 
 
@@ -397,7 +397,7 @@ def avoid_check(piece, turn, coords, kings_check):
         temp_occupied[coords[1]][coords[0]] = turn
         temp_occupied[piece.loc[0]][piece.loc[1]] = 0
         piece.loc = [coords[1], coords[0]]
-        for p in Piece.pieces:
+        for p in p2.pieces:
             p.moves = find_moves(p, brq_squares(p, temp_occupied, False, kings_check), temp_occupied, False, kings_check)
                             
         if any(p.moves[-1] for p in p2.pieces):   
@@ -416,7 +416,7 @@ def avoid_check(piece, turn, coords, kings_check):
         piece.loc = [coords[1], coords[0]]
         
         
-        for p in Piece.pieces:
+        for p in p1.pieces:
             p.moves = find_moves(p, brq_squares(p, temp_occupied, False, kings_check), temp_occupied, False, kings_check)
 
         if any(p.moves[-1] for p in p1.pieces):
@@ -425,8 +425,8 @@ def avoid_check(piece, turn, coords, kings_check):
         else:
             piece.loc = temp_loc
             return True
-    else:
-        return True
+    
+    return True
     
 
 def can_move(piece, coords, kings_check):
@@ -441,7 +441,6 @@ def can_move(piece, coords, kings_check):
         for p in Piece.pieces:
             p.moves = find_moves(p, brq_squares(p, occupied, False, kings_check), occupied, False, kings_check)
         return False
-
 
     for p in Piece.pieces:
         p.moves = find_moves(p, brq_squares(p, occupied, False, kings_check), occupied, False, kings_check)  
