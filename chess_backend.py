@@ -215,6 +215,8 @@ def brq_squares(piece, occupied, run_av_check, kings_check):
     check = False
     # pos[0] == x, pos[1] == y
     def up(pos, n):
+        if piece.name == 'BP':
+            return 0
         global check
         check = detect_check(piece, [pos[0], pos[1]-1]) if detect_check(piece, [pos[0], pos[1]-1]) is not None and piece.name[1] in {'R', 'Q'}  else check
 
@@ -241,6 +243,8 @@ def brq_squares(piece, occupied, run_av_check, kings_check):
         
             
     def down(pos, n):
+        if piece.name == 'WP':
+            return 0
         global check
         check = detect_check(piece, [pos[0], pos[1]+1]) if detect_check(piece, [pos[0], pos[1]+1]) is not None and piece.name[1] in {'R', 'Q'}  else check
         if pos[1]+1 > 7 or occupied[pos[1]+1][pos[0]] == name_id[piece.name[0]]:

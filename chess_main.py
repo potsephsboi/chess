@@ -1,4 +1,4 @@
-#   fix small legal_moves count bugs
+#   must fix pawn legal moves
 
 
 
@@ -52,8 +52,6 @@ def main():
                         continue 
                     temp_piece = piece
                     temp_piece.moves = find_moves(temp_piece, brq_squares(temp_piece, occupied, False, kings_check), occupied, True, kings_check)
-
-                    
                 else:    # var piece behaves as coords list        
                     if temp_piece is not None and can_move(temp_piece, piece, kings_check):
                                         # x, y
