@@ -8,7 +8,6 @@ class Player:
 
 
 class Piece:
-
     pieces = []
     def __init__(self, name, value, loc, image):
         self.name = name 

@@ -39,7 +39,7 @@ def select_piece(mouse, turn):
 
 
 def find_moves(piece, brq, occupied, incr_legal_moves, kings_check):     # bishop rook queen
-
+    
     if piece.name[1] == 'P':
         check = False
         for i in range(2):
@@ -67,9 +67,9 @@ def find_moves(piece, brq, occupied, incr_legal_moves, kings_check):     # bisho
                 if incr_legal_moves:
                     piece.legal_moves += down_left
                     piece.legal_moves += down_right
-
+                
                 return [0, 2 if brq[1] >= 2 else brq[1], 0, 0, 0, 0, down_left, down_right, check]
-
+                
                  
         else:
             if piece.has_moved:
@@ -250,7 +250,7 @@ def brq_squares(piece, occupied, run_av_check, kings_check):
 
         n += 1
         if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0], pos[1]+1], kings_check) and piece.name[1] != 'B':
-            piece.legal_moves += 1 if piece.name != 'WP' and not (piece.name == 'BP' and occupied[pos[1]+1][pos[0]] == 1) else 0
+            piece.legal_moves += 1 if piece.name != 'WP' and not (piece.name == 'BP' and occupied[pos[1]][pos[0]] == 1) else 0
         if run_av_check and n == 1 and (piece.name[1] == 'K' or (piece.name == 'BP' and piece.has_moved)): 
             return n
         if run_av_check and n == 2 and piece.name == 'BP' and not piece.has_moved:
@@ -380,6 +380,12 @@ def brq_squares(piece, occupied, run_av_check, kings_check):
 def avoid_check(piece, turn, coords, kings_check):
     from chess_setup import occupied, p1, p2
     
+    cp = find_checking_piece(turn)
+    if cp is not None and coords == [cp.loc[1], cp.loc[0]] and piece.name[1] != 'K':
+        print(piece)
+        return True
+
+
     if turn == 1:
         temp_occupied = deepcopy(occupied)
         temp_loc = piece.loc.copy()
