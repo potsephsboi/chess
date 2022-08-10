@@ -255,7 +255,7 @@ def brq_squares(piece, occupied, run_av_check, kings_check):
 
         n += 1
         if run_av_check and avoid_check(piece, name_id[piece.name[0]], [pos[0], pos[1]+1], kings_check) and piece.name[1] != 'B':
-            piece.legal_moves += 1 if piece.name != 'WP' and not (piece.name == 'BP' and occupied[pos[1]][pos[0]] == 1) else 0
+            piece.legal_moves += 1 if piece.name != 'WP' and not (piece.name == 'BP' and occupied[pos[1]+1][pos[0]] == 1) else 0
         if run_av_check and n == 1 and (piece.name[1] == 'K' or (piece.name == 'BP' and piece.has_moved)): 
             return n
         if run_av_check and n == 2 and piece.name == 'BP' and not piece.has_moved:
@@ -584,11 +584,15 @@ def make_queen(pawn, turn):
 
     if turn == 1:
         p1.pieces.remove(pawn)
-        p1.pieces.append(Piece('WQ', 9, [pawn.loc[0], pawn.loc[1]], pygame.image.load('assets/pieces/white/queen.png')))
+        new_queen = Piece('WQ', 9, [pawn.loc[0], pawn.loc[1]], pygame.image.load('assets/pieces/white/queen.png'))
+        p1.pieces.append(new_queen)
+        new_queen.moves = [0, 0, 0, 0, 0, 0, 0, 0]
     
     elif turn == -1:
         p2.pieces.remove(pawn)
-        p2.pieces.append(Piece('BQ', 9, [pawn.loc[0], pawn.loc[1]], pygame.image.load('assets/pieces/black/bqueen.png')))
+        new_queen = Piece('BQ', 9, [pawn.loc[0], pawn.loc[1]], pygame.image.load('assets/pieces/black/bqueen.png'))
+        p2.pieces.append(new_queen)
+        new_queen.moves = [0, 0, 0, 0, 0, 0, 0, 0]
 
 
 def checkmate(check):

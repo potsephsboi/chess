@@ -18,7 +18,7 @@ class Piece:
         self.moves = []
         Piece.pieces.append(self)
     def __repr__(self):
-        return f' -Piece name: {self.name} \n -Piece loc: {self.loc} \n -Piece moves: {self.moves}'
+        return f' -Piece name: {self.name} \n -Piece loc: {self.loc} \n -Piece moves: {self.moves} \n -Piece legal_moves: {self.legal_moves}'
 
 class Pawn(Piece):
     enpassan = None
