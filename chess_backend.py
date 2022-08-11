@@ -542,7 +542,7 @@ def move(piece, coords, turn):
         remove_piece(coords, turn)
     
     if type(piece) == Pawn:
-        if piece.has_moved and temp_enpassan is not None and coords[0] == temp_enpassan.loc[1] and abs(coords[1] - temp_enpassan.loc[0]) == 1:
+        if piece.has_moved and temp_enpassan is not None and coords[0] == temp_enpassan.loc[1] and ((coords[1] - temp_enpassan.loc[0] == -1 and piece.name == 'WP') or (coords[1] - temp_enpassan.loc[0] == 1 and piece.name == 'BP')):
             occupied[temp_enpassan.loc[0]][temp_enpassan.loc[1]] = 0
             remove_piece([temp_enpassan.loc[1], temp_enpassan.loc[0]], turn)
             
