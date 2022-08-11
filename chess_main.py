@@ -1,5 +1,5 @@
-#   must fix pawn legal moves
-
+# Run this file to play chess locally 
+# Currently testing for bugs ... 
 
 
 from chess_frontend import *
@@ -51,15 +51,15 @@ def main():
                     if piece.name[0] != turn_id[turn]:
                         continue 
                     temp_piece = piece
-                    temp_piece.moves = find_moves(temp_piece, brq_squares(temp_piece, occupied, False, kings_check), occupied, True, kings_check)
-                    kings_check[1] = any(p.moves[-1] for p in p1.pieces)
-                    kings_check[0] = any(p.moves[-1] for p in p2.pieces)
                 else:    # var piece behaves as coords list        
                     if temp_piece is not None and can_move(temp_piece, piece, kings_check):
                         
                                         # x, y
                         move(temp_piece, piece, turn)   
                         update_occupied(occupied)
+                        temp_piece.moves = find_moves(temp_piece, brq_squares(temp_piece, occupied, False, kings_check), occupied, True, kings_check)
+                        kings_check[1] = any(p.moves[-1] for p in p1.pieces)
+                        kings_check[0] = any(p.moves[-1] for p in p2.pieces)
 
                         if turn == 1:
                             for p in p2.pieces:
@@ -70,19 +70,6 @@ def main():
                             for p in p1.pieces:
                                 p.legal_moves = 0
                                 p.moves = find_moves(p, brq_squares(p, occupied, True, kings_check), occupied, True, kings_check)
-
-
-                        for row in occupied:
-                            for p in row:
-                                print(turn_id[p], end='')
-                            print()
-
-                        print('         ---         ')
-                        for p in p2.pieces:
-                            print(p.name + ': ' + str(p.legal_moves), p.loc, end=' | ')
-                        print()
-                        print('---------------------')
-                        print('         ---         ')
 
                         turn *= -1
                         temp_piece = None
@@ -112,3 +99,17 @@ if __name__ == '__main__':
 
 
 
+
+
+
+# for row in occupied:
+#     for p in row:
+#         print(turn_id[p], end='')
+#     print()
+
+# print('         ---         ')
+# for p in p2.pieces:
+#     print(p.name + ': ' + str(p.legal_moves), p.loc, end=' | ')
+# print(kings_check)
+# print('---------------------')
+# print('         ---         ')
