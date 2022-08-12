@@ -1,6 +1,3 @@
-from this import d
-
-
 class SocketPlayer:
     Players = []
     
