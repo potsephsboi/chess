@@ -7,8 +7,9 @@ DC_MSG = '!DC'
 FORMAT = 'utf-8'
 SERVER_PORT = PORT = 5051
 SERVER_IP = IP = socket.gethostbyname(socket.gethostname())
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((SERVER_IP, SERVER_PORT))
 
 
@@ -28,7 +29,7 @@ def receive_data():
         msg = client.recv(msg_len).decode(FORMAT)
         print(f'[NEW MESSAGE] {msg}')
 
-
-send('testing server recv')
-receive_data()
+if __name__ == '__main__':
+    send('testing server recv')
+    receive_data()
 
