@@ -1,6 +1,8 @@
 import socket
 import threading
 
+from socket_helper import *
+
 
 HEADERSIZE = 25
 DC_MESSAGE = '!DC'
@@ -12,7 +14,14 @@ IP = socket.gethostbyname(socket.gethostname())
 
 def handle_client(c_socket, c_addr):
     print(f'[NEW CONNECTION DETECTED] {c_addr}')
-    print(f'[ACTIVE CONNECTIONS] {threading.active_count()-1}')
+    
+    if len(SocketPlayer.Players) == 0:
+        SocketPlayer.Players.append(SocketPlayer(c_socket, c_addr, 'white'))
+        current_player = SocketPlayer.Players[0]
+    else:
+        SocketPlayer.Players.append(SocketPlayer(c_socket, c_addr, 'black'))
+        current_player = SocketPlayer.Players[1]
+
 
     while True:
         msg_len = c_socket.recv(HEADERSIZE).decode(FORMAT)
@@ -26,12 +35,13 @@ def handle_client(c_socket, c_addr):
                 print(f'  >{msg}')
 
 def listen():
-    server.listen()
     print('[SERVER IS LISTENING]')
-    while True:
+    while len(SocketPlayer.Players) < 2:
+        server.listen()
         c_socket, c_addr = server.accept()
-        thread = threading.Thread(target=handle_client, args=(c_socket, c_addr))
-        thread.start()
+        conn = threading.Thread(target=handle_client, args=(c_socket, c_addr))
+        conn.start()
+    print('[BOTH PLAYERS JOINED | GAME STARTS]')
 
 
 if __name__ == '__main__':

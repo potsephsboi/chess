@@ -1,5 +1,6 @@
 import socket
 
+from socket_helper import *
 
 HEADERSIZE = 25
 DC_MSG = '!DC'
