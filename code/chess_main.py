@@ -1,24 +1,42 @@
 # Run this file to play chess locally 
 # Currently testing for bugs ... 
 
+import time
+import random
 
 from chess_frontend import *
 from chess_setup import *
 from chess_backend import *
 
+
+
+
 WIDTH = 640
 HEIGHT = 640
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-GREY = (115, 147, 179)
+GREY1 = (115, 147, 179)
+GREY2 = (119,136,153)
 FPS = 30
 
 pygame.init()
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 
+font = pygame.font.Font('freesansbold.ttf', 24)
+wait_text1 = font.render('You joined the game', True, BLACK, GREY2)
+wait_text2 = font.render('Waiting for black to join...', True, BLACK, GREY2)
+
+def wait_for_opponent(img_id):
+    WIN.fill(GREY2)
+    WIN.blit(wait_text1, (50, 100))
+    WIN.blit(wait_text2, (50, 140))
+    WIN.blit(position_imgs[img_id], (70, 250))
+    pygame.display.update()
+
+
 def draw_window(piece):
-    WIN.fill(GREY)
+    WIN.fill(GREY1)
     display_grid(WIN)
     show_pieces()
     if issubclass(type(piece), Piece):
@@ -28,9 +46,11 @@ def draw_window(piece):
 
 
 def main():
-    
+
     turn = 1
     temp_piece = piece = None
+    t1 = time.time_ns()
+    img_id = 0
     kings_check = [False, False]
 
     clock = pygame.time.Clock()
@@ -82,12 +102,14 @@ def main():
                         if cmate is not None:
                             print(f'{cmate} wins')
                             run = False
-
-                        
-                        
-
-
-        draw_window(temp_piece)
+  
+        t2 = time.time_ns()
+        if t2 - t1 >= 1000000000:
+            t1 = time.time_ns()
+            img_id += 1 if img_id < 3 else -3
+        
+        wait_for_opponent(img_id)
+        # draw_window(temp_piece)
         
             
 

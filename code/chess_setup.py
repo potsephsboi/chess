@@ -4,7 +4,12 @@ from chess_backend import *
 WIDTH = 640
 HEIGHT = 640
 
-      
+position_imgs = [
+    pygame.image.load('../assets/position1.png'),
+    pygame.image.load('../assets/position2.png'),
+    pygame.image.load('../assets/position3.png'),
+    pygame.image.load('../assets/position4.png')
+]
 av_move = pygame.image.load('../assets/del.png')
 
                               # y, x

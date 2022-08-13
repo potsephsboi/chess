@@ -16,8 +16,6 @@ col_dict = {
 
 
 DOT_SIZE = 30
-
-
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREY = (115, 147, 179)
