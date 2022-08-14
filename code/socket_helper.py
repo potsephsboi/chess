@@ -8,4 +8,4 @@ class SocketPlayer:
         self.connected = True
         SocketPlayer.Players.append(self)
     def __repr__(self) -> str:
-        return f'[{self.color.upper()}] // [CONN STATUS] {self.connected}'
+        return f'[{self.color}] // [CONN STATUS] {self.addr}'

@@ -8,7 +8,7 @@ HEADERSIZE = 25
 DC_MESSAGE = '!DC'
 FORMAT = 'utf-8'
 
-PORT = 5051
+PORT = 5050
 IP = socket.gethostbyname(socket.gethostname())
 
 
@@ -16,12 +16,15 @@ def handle_client(c_socket, c_addr):
     print(f'[NEW CONNECTION DETECTED] {c_addr}')
     
     if len(SocketPlayer.Players) == 0:
-        SocketPlayer.Players.append(SocketPlayer(c_socket, c_addr, 'white'))
+        SocketPlayer(c_socket, c_addr, 'W')
         current_player = SocketPlayer.Players[0]
-        import chess_main 
+        from chess_main import main
+        main(current_player)
     else:
-        SocketPlayer.Players.append(SocketPlayer(c_socket, c_addr, 'black'))
+        SocketPlayer(c_socket, c_addr, 'B')
         current_player = SocketPlayer.Players[1]
+        from chess_main import main
+        main(current_player)
 
 
     while True:

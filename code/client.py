@@ -5,7 +5,7 @@ from socket_helper import *
 HEADERSIZE = 25
 DC_MSG = '!DC'
 FORMAT = 'utf-8'
-SERVER_PORT = PORT = 5051
+SERVER_PORT = PORT = 5050
 SERVER_IP = IP = socket.gethostbyname(socket.gethostname())
 
 
@@ -30,6 +30,6 @@ def receive_data():
         print(f'[NEW MESSAGE] {msg}')
 
 if __name__ == '__main__':
-    send('testing server recv')
+    # send('testing server recv')
     receive_data()
 

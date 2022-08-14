@@ -1,13 +1,15 @@
 # Run this file to play chess locally 
 # Currently testing for bugs ... 
 
+from curses.ascii import SO
+from re import S
 import time
 
 
 from chess_frontend import *
 from chess_setup import *
 from chess_backend import *
-
+from socket_helper import SocketPlayer
 
 
 
@@ -45,7 +47,7 @@ def draw_window(piece):
 
 
 
-def main():
+def main(cur_player):
 
     turn = 1
     temp_piece = piece = None
@@ -102,16 +104,15 @@ def main():
                         if cmate is not None:
                             print(f'{cmate} wins')
                             run = False
-        if 1:
+        
+        if cur_player.color == 'W' and len(SocketPlayer.Players) < 2:
             t2 = time.time_ns()
             if t2 - t1 >= 1000000000:
                 t1 = time.time_ns()
                 img_id += 1 if img_id < 3 else -3
-            
             wait_for_opponent(img_id)
         else:
             draw_window(temp_piece)
-        
             
 
     pygame.quit()
