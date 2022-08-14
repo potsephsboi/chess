@@ -2,7 +2,7 @@
 # Currently testing for bugs ... 
 
 import time
-import random
+
 
 from chess_frontend import *
 from chess_setup import *
@@ -102,22 +102,20 @@ def main():
                         if cmate is not None:
                             print(f'{cmate} wins')
                             run = False
-  
-        t2 = time.time_ns()
-        if t2 - t1 >= 1000000000:
-            t1 = time.time_ns()
-            img_id += 1 if img_id < 3 else -3
-        
-        wait_for_opponent(img_id)
-        # draw_window(temp_piece)
+        if 1:
+            t2 = time.time_ns()
+            if t2 - t1 >= 1000000000:
+                t1 = time.time_ns()
+                img_id += 1 if img_id < 3 else -3
+            
+            wait_for_opponent(img_id)
+        else:
+            draw_window(temp_piece)
         
             
 
     pygame.quit()
 
-
-if __name__ == '__main__':
-    main()
 
 
 
