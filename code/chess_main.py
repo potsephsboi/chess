@@ -1,8 +1,7 @@
 # Run this file to play chess locally 
 # Currently testing for bugs ... 
 
-from curses.ascii import SO
-from re import S
+
 import time
 
 
@@ -23,31 +22,32 @@ FPS = 30
 
 pygame.init()
 
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-
-font = pygame.font.Font('freesansbold.ttf', 24)
-wait_text1 = font.render('You joined the game', True, BLACK, GREY2)
-wait_text2 = font.render('Waiting for black to join...', True, BLACK, GREY2)
-
-def wait_for_opponent(img_id):
-    WIN.fill(GREY2)
-    WIN.blit(wait_text1, (50, 100))
-    WIN.blit(wait_text2, (50, 140))
-    WIN.blit(position_imgs[img_id], (70, 250))
+def wait_for_opponent(img_id, surface, txt1, txt2):
+    surface.fill(GREY2)
+    surface.blit(txt1, (50, 100))
+    surface.blit(txt2, (50, 140))
+    surface.blit(position_imgs[img_id], (70, 250))
     pygame.display.update()
 
 
-def draw_window(piece):
-    WIN.fill(GREY1)
-    display_grid(WIN)
-    show_pieces()
+def draw_window(piece, surface):
+    surface.fill(GREY1)
+    display_grid(surface)
+    show_pieces(surface)
     if issubclass(type(piece), Piece):
-        show_piece_moves(piece)
+        show_piece_moves(piece, surface)
     pygame.display.update()
 
 
 
 def main(cur_player):
+    pygame.init()
+
+    win = pygame.display.set_mode((WIDTH, HEIGHT))
+
+    font = pygame.font.Font('freesansbold.ttf', 24)
+    wait_txt1 = font.render('You joined the game', True, BLACK, GREY2)
+    wait_txt2 = font.render('Waiting for black to join...', True, BLACK, GREY2)
 
     turn = 1
     temp_piece = piece = None
@@ -110,9 +110,9 @@ def main(cur_player):
             if t2 - t1 >= 1000000000:
                 t1 = time.time_ns()
                 img_id += 1 if img_id < 3 else -3
-            wait_for_opponent(img_id)
+            wait_for_opponent(img_id, win, wait_txt1, wait_txt2)
         else:
-            draw_window(temp_piece)
+            draw_window(temp_piece, win)
             
 
     pygame.quit()
