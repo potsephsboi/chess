@@ -18,15 +18,12 @@ def handle_client(c_socket, c_addr):
     if len(SocketPlayer.Players) == 0:
         SocketPlayer(c_socket, c_addr, 'W')
         current_player = SocketPlayer.Players[0]
-        import chess_main
-        game_thread_w = threading.Thread(target=chess_main.main, args=(current_player,))
-        game_thread_w.start()
+
     else:
         SocketPlayer(c_socket, c_addr, 'B')
         current_player = SocketPlayer.Players[1]
-        import chess_main
-        game_thread_b = threading.Thread(target=chess_main.main, args=(current_player,))
-        game_thread_b.start()
+        print(SocketPlayer.Players)
+
 
     while True:
         msg_len = c_socket.recv(HEADERSIZE).decode(FORMAT)

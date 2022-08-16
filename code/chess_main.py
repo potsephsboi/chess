@@ -2,14 +2,15 @@
 # Currently testing for bugs ... 
 
 
+import threading
 import time
-
+import socket
 
 from chess_frontend import *
 from chess_setup import *
 from chess_backend import *
 from socket_helper import SocketPlayer
-
+from client import *
 
 
 WIDTH = 640
@@ -20,7 +21,8 @@ GREY1 = (115, 147, 179)
 GREY2 = (119,136,153)
 FPS = 30
 
-pygame.init()
+SERVER_PORT = 5050
+SERVER_IP = socket.gethostbyname(socket.gethostname())
 
 def wait_for_opponent(img_id, surface, txt1, txt2):
     surface.fill(GREY2)
@@ -64,6 +66,7 @@ def main(cur_player):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+                return
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 
@@ -105,20 +108,34 @@ def main(cur_player):
                             print(f'{cmate} wins')
                             run = False
         
-        if cur_player.color == 'W' and len(SocketPlayer.Players) < 2:
+        if len(SocketPlayer.Players) < 2:
             t2 = time.time_ns()
             if t2 - t1 >= 1000000000:
                 t1 = time.time_ns()
                 img_id += 1 if img_id < 3 else -3
             wait_for_opponent(img_id, win, wait_txt1, wait_txt2)
         else:
-            draw_window(temp_piece, win)
+            if cur_player.color == 'W':
+                draw_window(temp_piece, win)
             
 
-    pygame.quit()
+    
 
+if __name__ == '__main__':
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.connect((SERVER_IP, SERVER_PORT))
+    time.sleep(1)
+    cur_sock = None
+    
+    for p in SocketPlayer.Players:
+        if p.socket == client:
+            cur_sock = p
 
-
+    if cur_sock is not None:
+        main_thread = threading.Thread(target=main, args=(cur_sock,))
+        main_thread.start()
+        rev_thread = threading.Thread(target=receive_data, args=(cur_sock,))
+    
 
 
 
