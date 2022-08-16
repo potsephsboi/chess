@@ -1,12 +1,24 @@
 import socket
 
-from socket_helper import *
-
 HEADERSIZE = 25
 DC_MSG = '!DC'
 FORMAT = 'utf-8'
-SERVER_PORT = PORT = 5050
+SERVER_PORT = PORT = 5051
 SERVER_IP = IP = socket.gethostbyname(socket.gethostname())
+
+
+PLAYERS = []
+class SocketPlayer:
+    
+    def __init__(self, socket, addr, color) -> None:
+        self.socket = socket
+        self.addr = addr
+        self.color = color
+        self.connected = True
+        
+    def __repr__(self) -> str:
+        return f'[{self.color}] // [SOCKET INFO]{self.addr} // [CONN STATUS] {self.connected}'
+
 
 
 def send(raw_msg, c_socket):
